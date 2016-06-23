@@ -1,0 +1,64 @@
+﻿Version=5.02
+NumberOfModules=1
+Module1=ShuttleXpressService
+Build1=Default,com.freshollie.shuttlexpress
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~SetApplicationAttribute(android:theme, "@android:style/Theme.Holo")~\n~'End of default text.~\n~
+IconFile=
+NumberOfFiles=0
+NumberOfLibraries=16
+Library1=core
+Library2=broadcastreceiver
+Library3=reflection
+Library4=usbserial
+Library5=serial
+Library6=usb
+Library7=javaobject
+Library8=byteconverter
+Library9=stringutils
+Library10=randomaccessfile
+Library11=keygen
+Library12=threading
+Library13=phone
+Library14=mediacontroller
+Library15=sushell
+Library16=sucommand
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: Shuttle Xpress Driver
+	#VersionCode: 1
+	#VersionName: 
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: unspecified
+	#CanInstallToExternalStorage: False
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: True
+#End Region
+
+Sub Process_Globals
+End Sub
+
+Sub Globals
+End Sub
+
+	
+
+Sub Activity_Create(FirstTime As Boolean)
+	'Do not forget to load the layout file created with the visual designer. For example:
+	'Activity.LoadLayout("Layout1")
+	
+	StartService(ShuttleXpressService)
+
+End Sub
+
+Sub Activity_Resume
+
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+
