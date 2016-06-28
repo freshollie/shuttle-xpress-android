@@ -280,6 +280,7 @@ Sub ButtonUp(Button As Int)
 		Else
 			in.Initialize(in.ACTION_MAIN, "")
 			in = pm.GetApplicationIntent("com.google.android.music")
+			in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRONT
 			If in.IsInitialized Then
 			   StartActivity(in)    
 
@@ -289,7 +290,7 @@ Sub ButtonUp(Button As Int)
 	Case(2)
 		in.Initialize(in.ACTION_MAIN, "")
 		in = pm.GetApplicationIntent("com.freshollie.radioapp")
-
+		in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRONT
 		If in.IsInitialized Then
 		   StartActivity(in)    
 
@@ -298,7 +299,7 @@ Sub ButtonUp(Button As Int)
 	Case(3)
 		If (DateTime.Now - ButtonDownTimes(2)) > 3000 Then
 			in = pm.GetApplicationIntent("au.com.shiftyjelly.pocketcasts")
-
+			in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRONT
 			If in.IsInitialized Then
 			   StartActivity(in)    
 
@@ -306,7 +307,7 @@ Sub ButtonUp(Button As Int)
 			
 		Else
 			in = pm.GetApplicationIntent("au.com.shiftyjelly.pocketcasts")
-
+			in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRONT
 			If in.IsInitialized Then
 			   StartActivity(in)    
 
@@ -318,14 +319,15 @@ Sub ButtonUp(Button As Int)
 			in.Initialize(in.ACTION_VIEW, "google.navigation:/?free=1&mode=d&entry=fnls")
 			If in.IsInitialized Then
 				in.SetComponent("com.google.android.apps.maps/com.google.android.maps.MapsActivity")
-				StartActivity(in)    
+				StartActivity(in)
+				
 
 			End If
 			
 		Else
 			in.Initialize(in.ACTION_MAIN, "")
 			in = pm.GetApplicationIntent("com.google.android.apps.maps")
-
+			in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRONT
 			If in.IsInitialized Then
 			   StartActivity(in)    
 

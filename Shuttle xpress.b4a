@@ -4,7 +4,8 @@ Module1=ShuttleXpressService
 Build1=Default,com.freshollie.shuttlexpress
 ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~SetApplicationAttribute(android:theme, "@android:style/Theme.Holo")~\n~'End of default text.~\n~
 IconFile=
-NumberOfFiles=0
+NumberOfFiles=1
+File1=Landscape.bal
 NumberOfLibraries=16
 Library1=core
 Library2=broadcastreceiver
@@ -28,7 +29,7 @@ Library16=sucommand
 	#VersionCode: 1
 	#VersionName: 
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
-	#SupportedOrientations: unspecified
+	#SupportedOrientations: landscape
 	#CanInstallToExternalStorage: False
 #End Region
 
@@ -38,17 +39,19 @@ Library16=sucommand
 #End Region
 
 Sub Process_Globals
+	
 End Sub
 
 Sub Globals
+	Dim Label1 As Label
 End Sub
 
 	
 
 Sub Activity_Create(FirstTime As Boolean)
 	'Do not forget to load the layout file created with the visual designer. For example:
-	'Activity.LoadLayout("Layout1")
-	
+	Activity.LoadLayout("Landscape")
+	Label1.Text = "Shuttle driver is running if it's connected"
 	StartService(ShuttleXpressService)
 
 End Sub

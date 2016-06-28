@@ -128,26 +128,26 @@ public static corsaro.sucommand.library.SuCommand _su = null;
 public com.freshollie.shuttlexpress.main _main = null;
 public static String  _broadcastreceiver_onreceive(String _action,Object _i) throws Exception{
 anywheresoftware.b4a.objects.IntentWrapper _intent1 = null;
- //BA.debugLineNum = 437;BA.debugLine="Sub BroadcastReceiver_OnReceive(Action As String,i";
- //BA.debugLineNum = 438;BA.debugLine="Dim Intent1 As Intent = i";
+ //BA.debugLineNum = 439;BA.debugLine="Sub BroadcastReceiver_OnReceive(Action As String,i";
+ //BA.debugLineNum = 440;BA.debugLine="Dim Intent1 As Intent = i";
 _intent1 = new anywheresoftware.b4a.objects.IntentWrapper();
 _intent1.setObject((android.content.Intent)(_i));
- //BA.debugLineNum = 439;BA.debugLine="Log(Action)";
+ //BA.debugLineNum = 441;BA.debugLine="Log(Action)";
 anywheresoftware.b4a.keywords.Common.Log(_action);
- //BA.debugLineNum = 441;BA.debugLine="If Intent1.HasExtra(\"device\") Then";
+ //BA.debugLineNum = 443;BA.debugLine="If Intent1.HasExtra(\"device\") Then";
 if (_intent1.HasExtra("device")) { 
- //BA.debugLineNum = 442;BA.debugLine="If USB.UsbPresent(Dev) = USB.USB_NONE Then";
+ //BA.debugLineNum = 444;BA.debugLine="If USB.UsbPresent(Dev) = USB.USB_NONE Then";
 if (_usb.UsbPresent(_dev)==_usb.USB_NONE) { 
- //BA.debugLineNum = 443;BA.debugLine="ExitApp";
+ //BA.debugLineNum = 445;BA.debugLine="ExitApp";
 _exitapp();
  };
  };
- //BA.debugLineNum = 448;BA.debugLine="If Action = \"com.freshollie.shuttlexpress.intent.";
+ //BA.debugLineNum = 450;BA.debugLine="If Action = \"com.freshollie.shuttlexpress.intent.";
 if ((_action).equals("com.freshollie.shuttlexpress.intent.START")) { 
- //BA.debugLineNum = 449;BA.debugLine="OpenShuttle";
+ //BA.debugLineNum = 451;BA.debugLine="OpenShuttle";
 _openshuttle();
  };
- //BA.debugLineNum = 451;BA.debugLine="End Sub";
+ //BA.debugLineNum = 453;BA.debugLine="End Sub";
 return "";
 }
 public static String  _buttondown(int _button) throws Exception{
@@ -196,91 +196,101 @@ _thread.Start("KeySub",_args);
 _in.Initialize(_in.ACTION_MAIN,"");
  //BA.debugLineNum = 277;BA.debugLine="in = pm.GetApplicationIntent(\"com.google.androi";
 _in = _pm.GetApplicationIntent("com.google.android.music");
- //BA.debugLineNum = 278;BA.debugLine="If in.IsInitialized Then";
+ //BA.debugLineNum = 278;BA.debugLine="in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRO";
+_in.setFlags((int) (131072));
+ //BA.debugLineNum = 279;BA.debugLine="If in.IsInitialized Then";
 if (_in.IsInitialized()) { 
- //BA.debugLineNum = 279;BA.debugLine="StartActivity(in)";
+ //BA.debugLineNum = 280;BA.debugLine="StartActivity(in)";
 anywheresoftware.b4a.keywords.Common.StartActivity(processBA,(Object)(_in.getObject()));
  };
  };
  break;
 case 1:
- //BA.debugLineNum = 285;BA.debugLine="in.Initialize(in.ACTION_MAIN, \"\")";
+ //BA.debugLineNum = 286;BA.debugLine="in.Initialize(in.ACTION_MAIN, \"\")";
 _in.Initialize(_in.ACTION_MAIN,"");
- //BA.debugLineNum = 286;BA.debugLine="in = pm.GetApplicationIntent(\"com.freshollie.rad";
+ //BA.debugLineNum = 287;BA.debugLine="in = pm.GetApplicationIntent(\"com.freshollie.rad";
 _in = _pm.GetApplicationIntent("com.freshollie.radioapp");
- //BA.debugLineNum = 288;BA.debugLine="If in.IsInitialized Then";
+ //BA.debugLineNum = 288;BA.debugLine="in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRON";
+_in.setFlags((int) (131072));
+ //BA.debugLineNum = 289;BA.debugLine="If in.IsInitialized Then";
 if (_in.IsInitialized()) { 
- //BA.debugLineNum = 289;BA.debugLine="StartActivity(in)";
+ //BA.debugLineNum = 290;BA.debugLine="StartActivity(in)";
 anywheresoftware.b4a.keywords.Common.StartActivity(processBA,(Object)(_in.getObject()));
  };
  break;
 case 2:
- //BA.debugLineNum = 294;BA.debugLine="If (DateTime.Now - ButtonDownTimes(2)) > 3000 Th";
+ //BA.debugLineNum = 295;BA.debugLine="If (DateTime.Now - ButtonDownTimes(2)) > 3000 Th";
 if ((anywheresoftware.b4a.keywords.Common.DateTime.getNow()-_buttondowntimes[(int) (2)])>3000) { 
- //BA.debugLineNum = 295;BA.debugLine="in = pm.GetApplicationIntent(\"au.com.shiftyjell";
+ //BA.debugLineNum = 296;BA.debugLine="in = pm.GetApplicationIntent(\"au.com.shiftyjell";
 _in = _pm.GetApplicationIntent("au.com.shiftyjelly.pocketcasts");
- //BA.debugLineNum = 297;BA.debugLine="If in.IsInitialized Then";
+ //BA.debugLineNum = 297;BA.debugLine="in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRO";
+_in.setFlags((int) (131072));
+ //BA.debugLineNum = 298;BA.debugLine="If in.IsInitialized Then";
 if (_in.IsInitialized()) { 
- //BA.debugLineNum = 298;BA.debugLine="StartActivity(in)";
+ //BA.debugLineNum = 299;BA.debugLine="StartActivity(in)";
 anywheresoftware.b4a.keywords.Common.StartActivity(processBA,(Object)(_in.getObject()));
  };
  }else {
- //BA.debugLineNum = 303;BA.debugLine="in = pm.GetApplicationIntent(\"au.com.shiftyjell";
+ //BA.debugLineNum = 304;BA.debugLine="in = pm.GetApplicationIntent(\"au.com.shiftyjell";
 _in = _pm.GetApplicationIntent("au.com.shiftyjelly.pocketcasts");
- //BA.debugLineNum = 305;BA.debugLine="If in.IsInitialized Then";
+ //BA.debugLineNum = 305;BA.debugLine="in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRO";
+_in.setFlags((int) (131072));
+ //BA.debugLineNum = 306;BA.debugLine="If in.IsInitialized Then";
 if (_in.IsInitialized()) { 
- //BA.debugLineNum = 306;BA.debugLine="StartActivity(in)";
+ //BA.debugLineNum = 307;BA.debugLine="StartActivity(in)";
 anywheresoftware.b4a.keywords.Common.StartActivity(processBA,(Object)(_in.getObject()));
  };
  };
  break;
 case 3:
- //BA.debugLineNum = 312;BA.debugLine="If (DateTime.Now - ButtonDownTimes(3)) > 3000 Th";
+ //BA.debugLineNum = 313;BA.debugLine="If (DateTime.Now - ButtonDownTimes(3)) > 3000 Th";
 if ((anywheresoftware.b4a.keywords.Common.DateTime.getNow()-_buttondowntimes[(int) (3)])>3000) { 
- //BA.debugLineNum = 313;BA.debugLine="in.Initialize(in.ACTION_VIEW, \"google.navigatio";
+ //BA.debugLineNum = 314;BA.debugLine="in.Initialize(in.ACTION_VIEW, \"google.navigatio";
 _in.Initialize(_in.ACTION_VIEW,"google.navigation:/?free=1&mode=d&entry=fnls");
- //BA.debugLineNum = 314;BA.debugLine="If in.IsInitialized Then";
+ //BA.debugLineNum = 315;BA.debugLine="If in.IsInitialized Then";
 if (_in.IsInitialized()) { 
- //BA.debugLineNum = 315;BA.debugLine="in.SetComponent(\"com.google.android.apps.maps/";
+ //BA.debugLineNum = 316;BA.debugLine="in.SetComponent(\"com.google.android.apps.maps/";
 _in.SetComponent("com.google.android.apps.maps/com.google.android.maps.MapsActivity");
- //BA.debugLineNum = 316;BA.debugLine="StartActivity(in)";
+ //BA.debugLineNum = 317;BA.debugLine="StartActivity(in)";
 anywheresoftware.b4a.keywords.Common.StartActivity(processBA,(Object)(_in.getObject()));
  };
  }else {
- //BA.debugLineNum = 321;BA.debugLine="in.Initialize(in.ACTION_MAIN, \"\")";
+ //BA.debugLineNum = 323;BA.debugLine="in.Initialize(in.ACTION_MAIN, \"\")";
 _in.Initialize(_in.ACTION_MAIN,"");
- //BA.debugLineNum = 322;BA.debugLine="in = pm.GetApplicationIntent(\"com.google.androi";
+ //BA.debugLineNum = 324;BA.debugLine="in = pm.GetApplicationIntent(\"com.google.androi";
 _in = _pm.GetApplicationIntent("com.google.android.apps.maps");
- //BA.debugLineNum = 324;BA.debugLine="If in.IsInitialized Then";
+ //BA.debugLineNum = 325;BA.debugLine="in.Flags = 131072 'FLAG_ACTIVITY_REORDER_TO_FRO";
+_in.setFlags((int) (131072));
+ //BA.debugLineNum = 326;BA.debugLine="If in.IsInitialized Then";
 if (_in.IsInitialized()) { 
- //BA.debugLineNum = 325;BA.debugLine="StartActivity(in)";
+ //BA.debugLineNum = 327;BA.debugLine="StartActivity(in)";
 anywheresoftware.b4a.keywords.Common.StartActivity(processBA,(Object)(_in.getObject()));
  };
  };
  break;
 case 4:
- //BA.debugLineNum = 332;BA.debugLine="If (DateTime.Now - ButtonDownTimes(4)) < 1000 Th";
+ //BA.debugLineNum = 334;BA.debugLine="If (DateTime.Now - ButtonDownTimes(4)) < 1000 Th";
 if ((anywheresoftware.b4a.keywords.Common.DateTime.getNow()-_buttondowntimes[(int) (4)])<1000) { 
- //BA.debugLineNum = 333;BA.debugLine="in.Initialize(in.ACTION_MAIN, \"\")";
+ //BA.debugLineNum = 335;BA.debugLine="in.Initialize(in.ACTION_MAIN, \"\")";
 _in.Initialize(_in.ACTION_MAIN,"");
- //BA.debugLineNum = 334;BA.debugLine="in.AddCategory(\"android.intent.category.HOME\")";
+ //BA.debugLineNum = 336;BA.debugLine="in.AddCategory(\"android.intent.category.HOME\")";
 _in.AddCategory("android.intent.category.HOME");
- //BA.debugLineNum = 335;BA.debugLine="in.Flags = 0x10000000";
+ //BA.debugLineNum = 337;BA.debugLine="in.Flags = 0x10000000";
 _in.setFlags((int) (0x10000000));
- //BA.debugLineNum = 336;BA.debugLine="StartActivity(in)";
+ //BA.debugLineNum = 338;BA.debugLine="StartActivity(in)";
 anywheresoftware.b4a.keywords.Common.StartActivity(processBA,(Object)(_in.getObject()));
  }else {
- //BA.debugLineNum = 339;BA.debugLine="in.Initialize(\"android.intent.action.VOICE_ASSI";
+ //BA.debugLineNum = 341;BA.debugLine="in.Initialize(\"android.intent.action.VOICE_ASSI";
 _in.Initialize("android.intent.action.VOICE_ASSIST","");
- //BA.debugLineNum = 340;BA.debugLine="StartActivity(in)";
+ //BA.debugLineNum = 342;BA.debugLine="StartActivity(in)";
 anywheresoftware.b4a.keywords.Common.StartActivity(processBA,(Object)(_in.getObject()));
  };
  break;
 }
 ;
- //BA.debugLineNum = 345;BA.debugLine="Log(\"ButtonUp\" & Button)";
+ //BA.debugLineNum = 347;BA.debugLine="Log(\"ButtonUp\" & Button)";
 anywheresoftware.b4a.keywords.Common.Log("ButtonUp"+BA.NumberToString(_button));
- //BA.debugLineNum = 346;BA.debugLine="End Sub";
+ //BA.debugLineNum = 348;BA.debugLine="End Sub";
 return "";
 }
 public static String  _connection_newdata(anywheresoftware.b4a.objects.usb.UsbDeviceConnectionWrapper.UsbRequestWrapper _request,boolean _indirection) throws Exception{
@@ -354,21 +364,21 @@ _result = _ph.Shell("sh",new String[]{_runner},(java.lang.StringBuilder)(_stdout
 return "";
 }
 public static String  _exitapp() throws Exception{
- //BA.debugLineNum = 427;BA.debugLine="Sub ExitApp";
- //BA.debugLineNum = 428;BA.debugLine="If Connection.IsInitialized Then Connection.Close";
+ //BA.debugLineNum = 429;BA.debugLine="Sub ExitApp";
+ //BA.debugLineNum = 430;BA.debugLine="If Connection.IsInitialized Then Connection.Close";
 if (_connection.IsInitialized()) { 
 _connection.CloseSynchronous();};
- //BA.debugLineNum = 429;BA.debugLine="Service.StopForeground(1)";
+ //BA.debugLineNum = 431;BA.debugLine="Service.StopForeground(1)";
 mostCurrent._service.StopForeground((int) (1));
- //BA.debugLineNum = 430;BA.debugLine="Notification.Cancel(1)";
+ //BA.debugLineNum = 432;BA.debugLine="Notification.Cancel(1)";
 _notification.Cancel((int) (1));
- //BA.debugLineNum = 431;BA.debugLine="Connection.CloseSynchronous";
+ //BA.debugLineNum = 433;BA.debugLine="Connection.CloseSynchronous";
 _connection.CloseSynchronous();
- //BA.debugLineNum = 432;BA.debugLine="Log(\"Closing App\")";
+ //BA.debugLineNum = 434;BA.debugLine="Log(\"Closing App\")";
 anywheresoftware.b4a.keywords.Common.Log("Closing App");
- //BA.debugLineNum = 433;BA.debugLine="ExitApplication";
+ //BA.debugLineNum = 435;BA.debugLine="ExitApplication";
 anywheresoftware.b4a.keywords.Common.ExitApplication();
- //BA.debugLineNum = 435;BA.debugLine="End Sub";
+ //BA.debugLineNum = 437;BA.debugLine="End Sub";
 return "";
 }
 public static String  _jogwheelleft() throws Exception{
@@ -619,94 +629,94 @@ int _ring = 0;
 int _jogwheel = 0;
 int _button1234 = 0;
 int _button5 = 0;
- //BA.debugLineNum = 349;BA.debugLine="Sub ProcessByte(Bytes() As Byte)";
- //BA.debugLineNum = 350;BA.debugLine="Dim Ring, JogWheel, Button1234, Button5 As Int";
+ //BA.debugLineNum = 351;BA.debugLine="Sub ProcessByte(Bytes() As Byte)";
+ //BA.debugLineNum = 352;BA.debugLine="Dim Ring, JogWheel, Button1234, Button5 As Int";
 _ring = 0;
 _jogwheel = 0;
 _button1234 = 0;
 _button5 = 0;
- //BA.debugLineNum = 352;BA.debugLine="Ring = Bytes(0)";
+ //BA.debugLineNum = 354;BA.debugLine="Ring = Bytes(0)";
 _ring = (int) (_bytes[(int) (0)]);
- //BA.debugLineNum = 353;BA.debugLine="JogWheel = Bytes(1)";
+ //BA.debugLineNum = 355;BA.debugLine="JogWheel = Bytes(1)";
 _jogwheel = (int) (_bytes[(int) (1)]);
- //BA.debugLineNum = 354;BA.debugLine="Button1234 = Bytes(3)";
+ //BA.debugLineNum = 356;BA.debugLine="Button1234 = Bytes(3)";
 _button1234 = (int) (_bytes[(int) (3)]);
- //BA.debugLineNum = 355;BA.debugLine="Button5 = Bytes(4)";
+ //BA.debugLineNum = 357;BA.debugLine="Button5 = Bytes(4)";
 _button5 = (int) (_bytes[(int) (4)]);
- //BA.debugLineNum = 357;BA.debugLine="If FirstInput <> True Then";
+ //BA.debugLineNum = 359;BA.debugLine="If FirstInput <> True Then";
 if (_firstinput!=anywheresoftware.b4a.keywords.Common.True) { 
- //BA.debugLineNum = 359;BA.debugLine="If Ring = 7 And LastControlValues(0) <> 7 Then";
+ //BA.debugLineNum = 361;BA.debugLine="If Ring = 7 And LastControlValues(0) <> 7 Then";
 if (_ring==7 && _lastcontrolvalues[(int) (0)]!=7) { 
- //BA.debugLineNum = 360;BA.debugLine="RingRightDown";
+ //BA.debugLineNum = 362;BA.debugLine="RingRightDown";
 _ringrightdown();
  }else if(_ring!=7 && _lastcontrolvalues[(int) (0)]==7) { 
- //BA.debugLineNum = 363;BA.debugLine="RingRightUp";
+ //BA.debugLineNum = 365;BA.debugLine="RingRightUp";
 _ringrightup();
  }else if(_ring==-7 && _lastcontrolvalues[(int) (0)]!=-7) { 
- //BA.debugLineNum = 366;BA.debugLine="RingLeftDown";
+ //BA.debugLineNum = 368;BA.debugLine="RingLeftDown";
 _ringleftdown();
  }else if(_ring!=-7 && _lastcontrolvalues[(int) (0)]==-7) { 
- //BA.debugLineNum = 369;BA.debugLine="RingLeftUp";
+ //BA.debugLineNum = 371;BA.debugLine="RingLeftUp";
 _ringleftup();
  }else if(_jogwheel!=_lastcontrolvalues[(int) (1)]) { 
- //BA.debugLineNum = 372;BA.debugLine="If JogWheel< 0 And LastControlValues(1) > 0 The";
+ //BA.debugLineNum = 374;BA.debugLine="If JogWheel< 0 And LastControlValues(1) > 0 The";
 if (_jogwheel<0 && _lastcontrolvalues[(int) (1)]>0) { 
- //BA.debugLineNum = 373;BA.debugLine="JogWheelRight";
+ //BA.debugLineNum = 375;BA.debugLine="JogWheelRight";
 _jogwheelright();
  }else if(_jogwheel>0 && _lastcontrolvalues[(int) (1)]<0) { 
- //BA.debugLineNum = 375;BA.debugLine="JogWheelLeft";
+ //BA.debugLineNum = 377;BA.debugLine="JogWheelLeft";
 _jogwheelleft();
  }else if(_jogwheel>_lastcontrolvalues[(int) (1)]) { 
- //BA.debugLineNum = 377;BA.debugLine="JogWheelRight";
+ //BA.debugLineNum = 379;BA.debugLine="JogWheelRight";
 _jogwheelright();
  }else {
- //BA.debugLineNum = 379;BA.debugLine="JogWheelLeft";
+ //BA.debugLineNum = 381;BA.debugLine="JogWheelLeft";
 _jogwheelleft();
  };
  }else if(_button1234==16 && _lastcontrolvalues[(int) (3)]!=16) { 
- //BA.debugLineNum = 383;BA.debugLine="ButtonDown(1)";
+ //BA.debugLineNum = 385;BA.debugLine="ButtonDown(1)";
 _buttondown((int) (1));
  }else if(_button1234!=16 && _lastcontrolvalues[(int) (3)]==16) { 
- //BA.debugLineNum = 386;BA.debugLine="ButtonUp(1)";
+ //BA.debugLineNum = 388;BA.debugLine="ButtonUp(1)";
 _buttonup((int) (1));
  }else if(_button1234==32 && _lastcontrolvalues[(int) (3)]!=32) { 
- //BA.debugLineNum = 389;BA.debugLine="ButtonDown(2)";
+ //BA.debugLineNum = 391;BA.debugLine="ButtonDown(2)";
 _buttondown((int) (2));
  }else if(_button1234!=32 && _lastcontrolvalues[(int) (3)]==32) { 
- //BA.debugLineNum = 392;BA.debugLine="ButtonUp(2)";
+ //BA.debugLineNum = 394;BA.debugLine="ButtonUp(2)";
 _buttonup((int) (2));
  }else if(_button1234==64 && _lastcontrolvalues[(int) (3)]!=64) { 
- //BA.debugLineNum = 395;BA.debugLine="ButtonDown(3)";
+ //BA.debugLineNum = 397;BA.debugLine="ButtonDown(3)";
 _buttondown((int) (3));
  }else if(_button1234!=64 && _lastcontrolvalues[(int) (3)]==64) { 
- //BA.debugLineNum = 398;BA.debugLine="ButtonUp(3)";
+ //BA.debugLineNum = 400;BA.debugLine="ButtonUp(3)";
 _buttonup((int) (3));
  }else if(_button1234==-128 && _lastcontrolvalues[(int) (3)]!=-128) { 
- //BA.debugLineNum = 401;BA.debugLine="ButtonDown(4)";
+ //BA.debugLineNum = 403;BA.debugLine="ButtonDown(4)";
 _buttondown((int) (4));
  }else if(_button1234!=-128 && _lastcontrolvalues[(int) (3)]==-128) { 
- //BA.debugLineNum = 404;BA.debugLine="ButtonUp(4)";
+ //BA.debugLineNum = 406;BA.debugLine="ButtonUp(4)";
 _buttonup((int) (4));
  }else if(_button5!=0 && _lastcontrolvalues[(int) (4)]==0) { 
- //BA.debugLineNum = 407;BA.debugLine="ButtonDown(5)";
+ //BA.debugLineNum = 409;BA.debugLine="ButtonDown(5)";
 _buttondown((int) (5));
  }else if(_button5==0 && _lastcontrolvalues[(int) (4)]!=0) { 
- //BA.debugLineNum = 410;BA.debugLine="ButtonUp(5)";
+ //BA.debugLineNum = 412;BA.debugLine="ButtonUp(5)";
 _buttonup((int) (5));
  };
  }else {
- //BA.debugLineNum = 415;BA.debugLine="FirstInput = False";
+ //BA.debugLineNum = 417;BA.debugLine="FirstInput = False";
 _firstinput = anywheresoftware.b4a.keywords.Common.False;
  };
- //BA.debugLineNum = 420;BA.debugLine="LastControlValues(0) = Ring";
+ //BA.debugLineNum = 422;BA.debugLine="LastControlValues(0) = Ring";
 _lastcontrolvalues[(int) (0)] = _ring;
- //BA.debugLineNum = 421;BA.debugLine="LastControlValues(1) = JogWheel";
+ //BA.debugLineNum = 423;BA.debugLine="LastControlValues(1) = JogWheel";
 _lastcontrolvalues[(int) (1)] = _jogwheel;
- //BA.debugLineNum = 422;BA.debugLine="LastControlValues(3) = Button1234";
+ //BA.debugLineNum = 424;BA.debugLine="LastControlValues(3) = Button1234";
 _lastcontrolvalues[(int) (3)] = _button1234;
- //BA.debugLineNum = 423;BA.debugLine="LastControlValues(4) = Button5";
+ //BA.debugLineNum = 425;BA.debugLine="LastControlValues(4) = Button5";
 _lastcontrolvalues[(int) (4)] = _button5;
- //BA.debugLineNum = 425;BA.debugLine="End Sub";
+ //BA.debugLineNum = 427;BA.debugLine="End Sub";
 return "";
 }
 public static String  _ringleftdown() throws Exception{

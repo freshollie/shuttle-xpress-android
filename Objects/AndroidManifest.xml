@@ -29,7 +29,7 @@
 			android:launchMode="singleTop"
 			android:name=".main"
 			android:label="Shuttle Xpress Driver"
-			android:screenOrientation="unspecified">
+			android:screenOrientation="landscape">
 			<intent-filter>
 			   <action android:name="android.intent.action.MAIN" />
 			   <category android:name="android.intent.category.LAUNCHER" />

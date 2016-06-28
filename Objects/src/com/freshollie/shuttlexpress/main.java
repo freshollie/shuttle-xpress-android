@@ -307,6 +307,7 @@ public class main extends Activity implements B4AActivity{
 	}
 
 public anywheresoftware.b4a.keywords.Common __c = null;
+public anywheresoftware.b4a.objects.LabelWrapper _label1 = null;
 public com.freshollie.shuttlexpress.shuttlexpressservice _shuttlexpressservice = null;
 
 public static boolean isAnyActivityVisible() {
@@ -314,25 +315,31 @@ public static boolean isAnyActivityVisible() {
 vis = vis | (main.mostCurrent != null);
 return vis;}
 public static String  _activity_create(boolean _firsttime) throws Exception{
- //BA.debugLineNum = 23;BA.debugLine="Sub Activity_Create(FirstTime As Boolean)";
- //BA.debugLineNum = 27;BA.debugLine="StartService(ShuttleXpressService)";
+ //BA.debugLineNum = 25;BA.debugLine="Sub Activity_Create(FirstTime As Boolean)";
+ //BA.debugLineNum = 27;BA.debugLine="Activity.LoadLayout(\"Landscape\")";
+mostCurrent._activity.LoadLayout("Landscape",mostCurrent.activityBA);
+ //BA.debugLineNum = 28;BA.debugLine="Label1.Text = \"Shuttle driver is running if it's";
+mostCurrent._label1.setText((Object)("Shuttle driver is running if it's connected"));
+ //BA.debugLineNum = 29;BA.debugLine="StartService(ShuttleXpressService)";
 anywheresoftware.b4a.keywords.Common.StartService(mostCurrent.activityBA,(Object)(mostCurrent._shuttlexpressservice.getObject()));
- //BA.debugLineNum = 29;BA.debugLine="End Sub";
+ //BA.debugLineNum = 31;BA.debugLine="End Sub";
 return "";
 }
 public static String  _activity_pause(boolean _userclosed) throws Exception{
- //BA.debugLineNum = 35;BA.debugLine="Sub Activity_Pause (UserClosed As Boolean)";
- //BA.debugLineNum = 37;BA.debugLine="End Sub";
+ //BA.debugLineNum = 37;BA.debugLine="Sub Activity_Pause (UserClosed As Boolean)";
+ //BA.debugLineNum = 39;BA.debugLine="End Sub";
 return "";
 }
 public static String  _activity_resume() throws Exception{
- //BA.debugLineNum = 31;BA.debugLine="Sub Activity_Resume";
- //BA.debugLineNum = 33;BA.debugLine="End Sub";
+ //BA.debugLineNum = 33;BA.debugLine="Sub Activity_Resume";
+ //BA.debugLineNum = 35;BA.debugLine="End Sub";
 return "";
 }
 public static String  _globals() throws Exception{
- //BA.debugLineNum = 18;BA.debugLine="Sub Globals";
- //BA.debugLineNum = 19;BA.debugLine="End Sub";
+ //BA.debugLineNum = 19;BA.debugLine="Sub Globals";
+ //BA.debugLineNum = 20;BA.debugLine="Dim Label1 As Label";
+mostCurrent._label1 = new anywheresoftware.b4a.objects.LabelWrapper();
+ //BA.debugLineNum = 21;BA.debugLine="End Sub";
 return "";
 }
 
@@ -350,7 +357,7 @@ shuttlexpressservice._process_globals();
     }
 }public static String  _process_globals() throws Exception{
  //BA.debugLineNum = 15;BA.debugLine="Sub Process_Globals";
- //BA.debugLineNum = 16;BA.debugLine="End Sub";
+ //BA.debugLineNum = 17;BA.debugLine="End Sub";
 return "";
 }
 }
