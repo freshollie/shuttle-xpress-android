@@ -97,11 +97,7 @@ Sub OpenShuttle
 				
 				If UsbMngr.HasPermission(UsbDvc) Then
 					Dim interface As UsbInterface
-					Try
-						interface = UsbDvc.GetInterface(i)
-					Catch
-						ExitApplication
-					End Try
+					interface = UsbDvc.GetInterface(0)
 					Log(interface)
 					Log(UsbMngr.USB_CLASS_HID)
 					Log(UsbDvc.DeviceClass)

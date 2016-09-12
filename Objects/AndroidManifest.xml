@@ -8,9 +8,9 @@
 	
 	<uses-sdk android:minSdkVersion="17" android:targetSdkVersion="22"/>
 	<supports-screens android:largeScreens="true" 
-	    android:normalScreens="true" 
-	    android:smallScreens="true" 
-	    android:anyDensity="true"/>
+		android:normalScreens="true" 
+		android:smallScreens="true" 
+		android:anyDensity="true"/>
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
