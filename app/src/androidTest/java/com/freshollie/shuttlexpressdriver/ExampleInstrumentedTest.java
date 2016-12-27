@@ -1,4 +1,4 @@
-package com.freshollie.shuttleexpressdriver;
+package com.freshollie.shuttlexpressdriver;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

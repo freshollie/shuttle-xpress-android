@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Shuttle Express Driver</string>
+    <string name="app_name">Shuttle Xpress Driver</string>
+    <string name="running_text">Connected and running</string>
 </resources>

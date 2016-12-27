@@ -1,4 +1,4 @@
-package com.freshollie.shuttleexpressdriver;
+package com.freshollie.shuttlexpressdriver;
 
 import org.junit.Test;
 
