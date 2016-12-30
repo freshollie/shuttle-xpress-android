@@ -1,0 +1,2 @@
+include ':app', ':ShuttleXpressDriver-Android'
+project(':ShuttleXpressDriver-Android').projectDir = new File('ShuttleXpressDriver-Android')
