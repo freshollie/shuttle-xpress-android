@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.freshollie.shuttlexpressdriver.DeviceService;
+import com.freshollie.shuttlexpressdriver.DriverService;
 import com.freshollie.shuttlexpressdriver.ShuttleXpressDevice;
 
 public class DeviceStatusActivity extends AppCompatActivity {
@@ -132,15 +132,15 @@ public class DeviceStatusActivity extends AppCompatActivity {
 
     public void openConnection() {
         startService(
-                new Intent(this, DeviceService.class)
-                        .setAction(DeviceService.ACTION_CONNECT)
+                new Intent(this, DriverService.class)
+                        .setAction(DriverService.ACTION_CONNECT)
         );
     }
 
     public void closeConnection() {
         startService(
-                new Intent(this, DeviceService.class)
-                        .setAction(DeviceService.ACTION_DISCONNECT)
+                new Intent(this, DriverService.class)
+                        .setAction(DriverService.ACTION_DISCONNECT)
         );
     }
 
