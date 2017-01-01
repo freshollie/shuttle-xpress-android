@@ -80,6 +80,7 @@ public class DriverService extends Service {
 
                 } else if (usbRequest == null) { // device disconnected
                     stop();
+                    break;
                 }
 
             }
@@ -208,9 +209,11 @@ public class DriverService extends Service {
             if (inUsbRequest.queue(shuttleXpressDevice.getStateBuffer(), inMaxPacketSize)) {
                 shuttleXpressDevice.setConnected();
 
-                Notification notification = notificationBuilder.build();
-                notificationManager.notify(NOTIFICATION_ID, notification);
-                startForeground(NOTIFICATION_ID, notification);
+                if (runBackground) {
+                    Notification notification = notificationBuilder.build();
+                    notificationManager.notify(NOTIFICATION_ID, notification);
+                    startForeground(NOTIFICATION_ID, notification);
+                }
 
                 inputListeningThread.start();
             } else {
@@ -223,7 +226,11 @@ public class DriverService extends Service {
     public void closeConnection() {
         if (shuttleXpressDevice.isConnected()) {
             Log.v(TAG, "Closing connection");
-            notificationManager.cancel(NOTIFICATION_ID);
+
+            if (runBackground) {
+                stopForeground(true);
+            }
+
             usbDeviceConnection.close();
             usbDevice = null;
         }
