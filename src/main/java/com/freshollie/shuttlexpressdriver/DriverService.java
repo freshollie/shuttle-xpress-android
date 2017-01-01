@@ -60,7 +60,7 @@ public class DriverService extends Service {
         public void run() {
             Log.v(TAG, "Started input listener");
 
-            while(shuttleXpressDevice.isConnected()) {
+            while (shuttleXpressDevice.isConnected()) {
                 UsbRequest usbRequest = usbDeviceConnection.requestWait();
 
                 if (usbRequest == inUsbRequest && shuttleXpressDevice.isConnected()) {
@@ -169,9 +169,9 @@ public class DriverService extends Service {
 
     public void requestConnection() {
         Log.v(TAG, "Requesting connection to device");
-        for (UsbDevice device: usbManager.getDeviceList().values()) {
+        for (UsbDevice device : usbManager.getDeviceList().values()) {
             Log.d(TAG, "ProductId: " + String.valueOf(device.getDeviceId()));
-            Log.d(TAG, "VendorId: "+ String.valueOf(device.getVendorId()));
+            Log.d(TAG, "VendorId: " + String.valueOf(device.getVendorId()));
 
             if (device.getDeviceId() == ShuttleXpressDevice.PRODUCT_ID &&
                     device.getVendorId() == ShuttleXpressDevice.VENDOR_ID) {
