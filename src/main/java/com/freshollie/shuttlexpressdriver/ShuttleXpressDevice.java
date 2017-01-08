@@ -15,21 +15,29 @@ public class ShuttleXpressDevice {
      * when data changes
      */
     public static String TAG = ShuttleXpressDevice.class.getSimpleName();
-    public static int PRODUCT_ID = 1002;
-    public static int VENDOR_ID = 2867;
+    public static final int PRODUCT_ID = 1002;
+    public static final int VENDOR_ID = 2867;
 
-    public static int POSITION_RIGHT = 923480912;
-    public static int POSITION_LEFT = 10934598;
-    public static int POSITION_MIDDLE = 2930958;
+    public static final class KeyCodes {
+        public static final int BUTTON_0 = 129379817;
+        public static final int BUTTON_1 = 129379818;
+        public static final int BUTTON_2 = 129379819;
+        public static final int BUTTON_3 = 129379820;
+        public static final int BUTTON_4 = 129379821;
 
-    public static int ACTION_RIGHT = 231321;
-    public static int ACTION_LEFT = 21318971;
+        public static final int RING_RIGHT = 129379822;
+        public static final int RING_LEFT = 129379823;
+        public static final int RING_MIDDLE = 129379823;
 
-    public static int ACTION_DOWN = 22394082;
-    public static int ACTION_UP = 30923849;
+        public static final int WHEEL_LEFT = 129379824;
+        public static final int WHEEL_RIGHT = 129379825;
 
-    public static int STATUS_CONNECTED = 23947234;
-    public static int STATUS_DISCONNECTED = 3289489;
+        public static final int ACTION_DOWN = 22394082;
+        public static final int ACTION_UP = 30923849;
+    }
+
+    public static final int STATUS_CONNECTED = 23947234;
+    public static final int STATUS_DISCONNECTED = 3289489;
 
     public static boolean DEBUG_OUT = false;
 
