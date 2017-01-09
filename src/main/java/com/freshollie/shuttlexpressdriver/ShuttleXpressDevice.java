@@ -3,6 +3,7 @@ package com.freshollie.shuttlexpressdriver;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
+import java.security.Key;
 import java.util.ArrayList;
 
 /**
@@ -43,9 +44,7 @@ public class ShuttleXpressDevice {
 
     private static ShuttleXpressDevice INSTANCE = new ShuttleXpressDevice();
 
-    private ArrayList<ClickWheelListener> clickWheelCallbacks = new ArrayList<>();
-    private ArrayList<RingListener> ringCallbacks = new ArrayList<>();
-    private ArrayList<ButtonListener> buttonCallbacks = new ArrayList<>();
+    private ArrayList<KeyListener> keyListeners = new ArrayList<>();
     private ArrayList<ConnectedListener> connectedCallbacks = new ArrayList<>();
 
     private ByteBuffer state;
@@ -60,20 +59,9 @@ public class ShuttleXpressDevice {
         return INSTANCE;
     }
 
-    public interface ClickWheelListener {
-        void onRight();
-        void onLeft();
-    }
-
-    public interface ButtonListener {
-        void onDown(int id);
-        void onUp(int id);
-    }
-
-    public interface RingListener {
-        void onRight();
-        void onLeft();
-        void onMiddle();
+    public interface KeyListener {
+        void onDown(int key);
+        void onUp(int key);
     }
 
     public interface ConnectedListener {
@@ -178,44 +166,15 @@ public class ShuttleXpressDevice {
         }
     }
 
-    public void onWheel(int direction) {
-        Log.v(TAG, "Wheel rotated " + (direction == ACTION_RIGHT ? "Right" : "Left"));
-
-        for (ClickWheelListener listener: clickWheelCallbacks) {
-            if (direction == ACTION_LEFT) {
-                listener.onLeft();
-            } else {
-                listener.onRight();
-            }
+    public void onKeyDown(int key) {
+        for (KeyListener keyListener: keyListeners) {
+            keyListener.onDown(key);
         }
     }
 
-    public void onRing(int position) {
-        Log.v(TAG, "Ring rotated " +
-                (position == POSITION_LEFT ? "Right":
-                        position == POSITION_MIDDLE ? "Middle":
-                                "Left"));
-
-        for (RingListener listener: ringCallbacks) {
-            if (position == POSITION_LEFT) {
-                listener.onLeft();
-            } else if (position == POSITION_RIGHT) {
-                listener.onRight();
-            } else {
-                listener.onMiddle();
-            }
-        }
-    }
-
-    public void onButton(int buttonId, int action) {
-        Log.v(TAG, "Button " + String.valueOf(buttonId) + " " + (action == ACTION_DOWN ? "Down" : "Up"));
-
-        for (ButtonListener listener: buttonCallbacks) {
-            if (action == ACTION_DOWN) {
-                listener.onDown(buttonId);
-            } else {
-                listener.onUp(buttonId);
-            }
+    public void onKeyUp(int key) {
+        for (KeyListener keyListener: keyListeners) {
+            keyListener.onUp(key);
         }
     }
 
@@ -227,59 +186,59 @@ public class ShuttleXpressDevice {
      * @param newWheel
      */
     public void doCallbacks(Integer[] newButtons, int newRing, int newWheel) {
+
+        // Checks if the ring position has changed
         if (newRing == 7 && ring != 7) {
-            onRing(POSITION_LEFT);
-        } else if ((newRing != 7 && ring == 7) || (newRing != -7 && ring == -7)) {
-            onRing(POSITION_MIDDLE);
+            onKeyUp(KeyCodes.RING_MIDDLE);
+            onKeyDown(KeyCodes.RING_LEFT);
+
+        } else if (newRing != 7 && ring == 7) {
+            onKeyUp(KeyCodes.RING_LEFT);
+            onKeyDown(KeyCodes.RING_MIDDLE);
+
+        } else if (newRing != -7 && ring == -7) {
+            onKeyUp(KeyCodes.RING_RIGHT);
+            onKeyDown(KeyCodes.RING_MIDDLE);
+
         } else if (newRing == -7 && ring != -7) {
-            onRing(POSITION_RIGHT);
+            onKeyDown(KeyCodes.RING_RIGHT);
         }
 
+        // Checks if wheel has moved
         if (newWheel != wheel) {
             if (newWheel < 0 && wheel > 0) {
-                onWheel(ACTION_RIGHT);
+                onKeyDown(KeyCodes.WHEEL_RIGHT);
+                onKeyUp(KeyCodes.WHEEL_RIGHT);
             } else if (newWheel > 0 && wheel < 0) {
-                onWheel(ACTION_LEFT);
+                onKeyDown(KeyCodes.WHEEL_LEFT);
+                onKeyUp(KeyCodes.WHEEL_LEFT);
             } else if (newWheel > wheel) {
-                onWheel(ACTION_RIGHT);
+                onKeyDown(KeyCodes.WHEEL_RIGHT);
+                onKeyUp(KeyCodes.WHEEL_RIGHT);
             } else {
-                onWheel(ACTION_LEFT);
+                onKeyDown(KeyCodes.WHEEL_LEFT);
+                onKeyUp(KeyCodes.WHEEL_LEFT);
             }
         }
 
+        // Checks if buttons have changed
         for (int i = 0; i < 5; i++) {
             if (!newButtons[i].equals(buttons[i])) {
                 if (newButtons[i] == 1) {
-                    onButton(i, ACTION_DOWN);
+                    onKeyDown(KeyCodes.BUTTON_0 + i); // Because buttons are in chronological order
                 } else {
-                    onButton(i, ACTION_UP);
+                    onKeyUp(KeyCodes.BUTTON_0 + i);
                 }
             }
         }
     }
 
-    public void registerClickWheelListener(ClickWheelListener listener) {
-        clickWheelCallbacks.add(listener);
+    public void registerKeyListener(KeyListener listener) {
+        keyListeners.add(listener);
     }
 
-    public void unregisterClickWheelListener(ClickWheelListener listener) {
-        clickWheelCallbacks.remove(listener);
-    }
-
-    public void registerRingListener(RingListener listener) {
-        ringCallbacks.add(listener);
-    }
-
-    public void unregisterRingListener(RingListener listener) {
-        ringCallbacks.remove(listener);
-    }
-
-    public void registerButtonListener(ButtonListener listener) {
-        buttonCallbacks.add(listener);
-    }
-
-    public void unregisterButtonListener(ButtonListener listener) {
-        buttonCallbacks.remove(listener);
+    public void unregisterKeyListener(KeyListener listener) {
+        keyListeners.remove(listener);
     }
 
     public void registerConnectedListener(ConnectedListener listener) {
