@@ -40,7 +40,7 @@ public class ShuttleXpressDevice {
     public static final int STATUS_CONNECTED = 23947234;
     public static final int STATUS_DISCONNECTED = 3289489;
 
-    public static boolean DEBUG_OUT = false;
+    public static boolean DEBUG_OUT = true;
 
     private static ShuttleXpressDevice INSTANCE = new ShuttleXpressDevice();
 
@@ -190,18 +190,19 @@ public class ShuttleXpressDevice {
         // Checks if the ring position has changed
         if (newRing == 7 && ring != 7) {
             onKeyUp(KeyCodes.RING_MIDDLE);
-            onKeyDown(KeyCodes.RING_LEFT);
+            onKeyDown(KeyCodes.RING_RIGHT);
 
         } else if (newRing != 7 && ring == 7) {
-            onKeyUp(KeyCodes.RING_LEFT);
-            onKeyDown(KeyCodes.RING_MIDDLE);
-
-        } else if (newRing != -7 && ring == -7) {
             onKeyUp(KeyCodes.RING_RIGHT);
             onKeyDown(KeyCodes.RING_MIDDLE);
 
+        } else if (newRing != -7 && ring == -7) {
+            onKeyUp(KeyCodes.RING_LEFT);
+            onKeyDown(KeyCodes.RING_MIDDLE);
+
         } else if (newRing == -7 && ring != -7) {
-            onKeyDown(KeyCodes.RING_RIGHT);
+            onKeyUp(KeyCodes.RING_MIDDLE);
+            onKeyDown(KeyCodes.RING_LEFT);
         }
 
         // Checks if wheel has moved

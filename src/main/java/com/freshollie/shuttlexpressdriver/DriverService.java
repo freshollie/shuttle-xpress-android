@@ -139,8 +139,8 @@ public class DriverService extends Service {
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         notificationBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.running_text))
+                .setContentTitle(getString(R.string.driver_title))
+                .setContentText(getString(R.string.driver_running_text))
                 .setSmallIcon(R.drawable.ic_gamepad_black_24dp)
                 .setOngoing(true);
 
