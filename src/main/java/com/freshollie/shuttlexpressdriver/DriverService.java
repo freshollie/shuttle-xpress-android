@@ -125,7 +125,7 @@ public class DriverService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "Created");
+        Log.v(TAG, "Created");
 
         usbManager = (UsbManager) getSystemService(USB_SERVICE);
         usbPermissionIntent =
@@ -143,7 +143,6 @@ public class DriverService extends Service {
                 .setContentText(getString(R.string.driver_running_text))
                 .setSmallIcon(R.drawable.ic_gamepad_black_24dp)
                 .setOngoing(true);
-
     }
 
     @Override
@@ -261,6 +260,8 @@ public class DriverService extends Service {
 
     @Override
     public void onDestroy() {
+        notificationManager.cancel(NOTIFICATION_ID);
+        stopForeground(true);
         unregisterReceiver(usbBroadcastReceiver);
     }
 
