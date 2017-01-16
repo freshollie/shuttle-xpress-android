@@ -10,11 +10,12 @@ import java.util.ArrayList;
  * Created by freshollie on 12/26/16.
  */
 
+/**
+ * Stores the current device data and performs callbacks
+ * when data changes
+ */
+
 public class ShuttleXpressDevice {
-    /**
-     * Stores the current device data and performs callbacks
-     * when data changes
-     */
     public static String TAG = ShuttleXpressDevice.class.getSimpleName();
     public static final int PRODUCT_ID = 1002;
     public static final int VENDOR_ID = 2867;
@@ -28,19 +29,21 @@ public class ShuttleXpressDevice {
 
         public static final int RING_RIGHT = 129379822;
         public static final int RING_LEFT = 129379823;
-        public static final int RING_MIDDLE = 129379823;
+        public static final int RING_MIDDLE = 129379824;
 
-        public static final int WHEEL_LEFT = 129379824;
-        public static final int WHEEL_RIGHT = 129379825;
+        public static final int WHEEL_LEFT = 129379825;
+        public static final int WHEEL_RIGHT = 129379826;
 
         public static final int ACTION_DOWN = 22394082;
         public static final int ACTION_UP = 30923849;
+
+        public static int NUM_KEYS = 10;
     }
 
     public static final int STATUS_CONNECTED = 23947234;
     public static final int STATUS_DISCONNECTED = 3289489;
 
-    public static boolean DEBUG_OUT = true;
+    public static boolean DEBUG_OUT = false;
 
     private static ShuttleXpressDevice INSTANCE = new ShuttleXpressDevice();
 
@@ -167,12 +170,18 @@ public class ShuttleXpressDevice {
     }
 
     public void onKeyDown(int key) {
+        if (DEBUG_OUT) {
+            Log.v(TAG, "Key Down:" + String.valueOf(key));
+        }
         for (KeyListener keyListener: keyListeners) {
             keyListener.onDown(key);
         }
     }
 
     public void onKeyUp(int key) {
+        if (DEBUG_OUT) {
+            Log.v(TAG, "Key Up:" + String.valueOf(key));
+        }
         for (KeyListener keyListener: keyListeners) {
             keyListener.onUp(key);
         }
