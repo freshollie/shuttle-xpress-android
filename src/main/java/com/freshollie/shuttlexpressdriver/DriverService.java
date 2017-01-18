@@ -79,6 +79,7 @@ public class DriverService extends Service {
                     usbRequest.queue(shuttleXpressDevice.getStateBuffer(), inMaxPacketSize);
 
                 } else if (usbRequest == null) { // device disconnected
+                    Log.v(TAG, "Input thread interupted")
                     stop();
                     break;
                 }
@@ -112,7 +113,7 @@ public class DriverService extends Service {
 
                 case (UsbManager.ACTION_USB_DEVICE_DETACHED):
                     UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (device != null) {
+                    if (device != null && isRunning()) {
                         if (device.getVendorId() == ShuttleXpressDevice.VENDOR_ID &&
                                 device.getDeviceId() == ShuttleXpressDevice.PRODUCT_ID) {
                             stop();
@@ -169,10 +170,10 @@ public class DriverService extends Service {
     public void requestConnection() {
         Log.v(TAG, "Requesting connection to device");
         for (UsbDevice device : usbManager.getDeviceList().values()) {
-            Log.d(TAG, "ProductId: " + String.valueOf(device.getDeviceId()));
+            Log.d(TAG, "ProductId: " + String.valueOf(device.getProductId()));
             Log.d(TAG, "VendorId: " + String.valueOf(device.getVendorId()));
 
-            if (device.getDeviceId() == ShuttleXpressDevice.PRODUCT_ID &&
+            if (device.getProductId() == ShuttleXpressDevice.PRODUCT_ID &&
                     device.getVendorId() == ShuttleXpressDevice.VENDOR_ID) {
                 if (usbManager.hasPermission(device)) {
                     usbDevice = device;
@@ -229,11 +230,11 @@ public class DriverService extends Service {
             if (runBackground) {
                 stopForeground(true);
             }
-
+            inUsbRequest.close();
             usbDeviceConnection.close();
             usbDevice = null;
+            shuttleXpressDevice.setDisconnected();
         }
-        shuttleXpressDevice.setDisconnected();
 
     }
 
@@ -250,12 +251,16 @@ public class DriverService extends Service {
      * stops the service and closes device connection
      */
     public void stop() {
-        Log.v(TAG, "Stopping");
         if (running) {
+            Log.v(TAG, "Stopping");
             running = false;
             closeConnection();
         }
         stopSelf();
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     @Override
