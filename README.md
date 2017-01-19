@@ -6,7 +6,7 @@ See usage in example app.
 
 ## Usage
 
-Connecting
+###Connecting
 
     Driver driver = new Driver(context);
     ShuttleXpressDevice device = driver.getDevice();
@@ -14,7 +14,7 @@ Connecting
     // ShuttleXpress Device;
     driver.start(); 
     
-Either read listen for key changes:
+###Interface
 
     // This click listener is thread safe. UI Updates can be performed through the listener
     
