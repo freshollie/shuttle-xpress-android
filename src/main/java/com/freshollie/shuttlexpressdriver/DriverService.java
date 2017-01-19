@@ -26,14 +26,14 @@ public class DriverService extends Service {
     private static final String ACTION_USB_PERMISSION =
             "com.freshollie.shuttlexpressdriver.DriverService.action.USB_PERMISSION";
 
+    // Connects with a notification so that the service will not be killed in the background
     public static final String ACTION_CONNECT =
             "com.freshollie.shuttlexpressdriver.DriverService.action.CONNECT";
-    // Connects with a notification so that the service will not be killed in the background
 
-    public static final String ACTION_CONNECT_SILENT =
-            "com.freshollie.shuttlexpressdriver.DriverService.action.CONNECT_SILENT";
     // Connects without a notification,
     // for apps that only need the shuttle device while in the foreground
+    public static final String ACTION_CONNECT_SILENT =
+            "com.freshollie.shuttlexpressdriver.DriverService.action.CONNECT_SILENT";
 
     public static final String ACTION_DISCONNECT =
             "com.freshollie.shuttlexpressdriver.DriverService.action.DISCONNECT";
@@ -61,10 +61,13 @@ public class DriverService extends Service {
             Log.v(TAG, "Started input listener");
 
             while (shuttleXpressDevice.isConnected()) {
+                // Wait for data to be received
                 UsbRequest usbRequest = usbDeviceConnection.requestWait();
 
+                // If the type of data received is incorrect
                 if (usbRequest == inUsbRequest && shuttleXpressDevice.isConnected()) {
 
+                    // Let the device know it has new data
                     new Handler(getMainLooper()).post(new Runnable() {
                         @Override
                         /**
@@ -72,14 +75,14 @@ public class DriverService extends Service {
                          * thread
                          */
                         public void run() {
-                            shuttleXpressDevice.newData();
+                            shuttleXpressDevice.onNewData();
                         }
                     });
 
                     usbRequest.queue(shuttleXpressDevice.getStateBuffer(), inMaxPacketSize);
 
                 } else if (usbRequest == null) { // device disconnected
-                    Log.v(TAG, "Input thread interupted")
+                    Log.v(TAG, "Input thread interrupted");
                     stop();
                     break;
                 }
@@ -115,7 +118,7 @@ public class DriverService extends Service {
                     UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device != null && isRunning()) {
                         if (device.getVendorId() == ShuttleXpressDevice.VENDOR_ID &&
-                                device.getDeviceId() == ShuttleXpressDevice.PRODUCT_ID) {
+                                device.getProductId() == ShuttleXpressDevice.PRODUCT_ID) {
                             stop();
                         }
                     }

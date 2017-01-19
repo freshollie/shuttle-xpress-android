@@ -1,5 +1,6 @@
 package com.freshollie.shuttlexpressdriver;
 
+import android.inputmethodservice.Keyboard;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -36,6 +37,9 @@ public class ShuttleXpressDevice {
 
         public static final int ACTION_DOWN = 22394082;
         public static final int ACTION_UP = 30923849;
+
+        public static final int STATE_UP = 0;
+        public static final int STATE_DOWN = 1;
 
         public static int NUM_KEYS = 10;
     }
@@ -94,6 +98,28 @@ public class ShuttleXpressDevice {
         return state;
     }
 
+    public int getButtonState(int id) {
+        return buttons[id];
+    }
+
+    public int getRingState() {
+        if (ring == 7) {
+            return KeyCodes.RING_RIGHT;
+        } else if (ring == -7) {
+            return KeyCodes.RING_LEFT;
+        } else {
+            return KeyCodes.RING_MIDDLE;
+        }
+    }
+
+    public int getRingPosition() {
+        return ring;
+    }
+
+    public int getWheelPosition() {
+        return wheel;
+    }
+
     public void resetDevice(int maxPacketSize) {
         state = ByteBuffer.allocate(maxPacketSize);
         ring = 0;
@@ -106,7 +132,7 @@ public class ShuttleXpressDevice {
      * Parses the new data store the new values
      * and makes the relevant callbacks for changed data
      */
-    public void newData() {
+    public void onNewData() {
         if (state != null) {
             int newRing, newWheel;
 
@@ -155,21 +181,21 @@ public class ShuttleXpressDevice {
         }
     }
 
-    public void onConnected() {
+    private void onConnected() {
         Log.v(TAG, "Connected");
         for (ConnectedListener listener: connectedCallbacks) {
             listener.onConnected();
         }
     }
 
-    public void onDisconnected() {
+    private void onDisconnected() {
         Log.v(TAG, "Disconnected");
         for (ConnectedListener listener: connectedCallbacks) {
             listener.onDisconnected();
         }
     }
 
-    public void onKeyDown(int key) {
+    private void onKeyDown(int key) {
         if (DEBUG_OUT) {
             Log.v(TAG, "Key Down:" + String.valueOf(key));
         }
@@ -178,7 +204,7 @@ public class ShuttleXpressDevice {
         }
     }
 
-    public void onKeyUp(int key) {
+    private void onKeyUp(int key) {
         if (DEBUG_OUT) {
             Log.v(TAG, "Key Up:" + String.valueOf(key));
         }
@@ -194,7 +220,7 @@ public class ShuttleXpressDevice {
      * @param newRing
      * @param newWheel
      */
-    public void doCallbacks(Integer[] newButtons, int newRing, int newWheel) {
+    private void doCallbacks(Integer[] newButtons, int newRing, int newWheel) {
 
         // Checks if the ring position has changed
         if (newRing == 7 && ring != 7) {
