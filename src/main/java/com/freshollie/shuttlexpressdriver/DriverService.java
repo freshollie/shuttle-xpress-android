@@ -1,7 +1,6 @@
 package com.freshollie.shuttlexpressdriver;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -19,9 +18,11 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+
 public class DriverService extends Service {
     public static String TAG = DriverService.class.getSimpleName();
-    private static int NOTIFICATION_ID = 0;
+    private static int NOTIFICATION_ID = 1;
 
     private static final String ACTION_USB_PERMISSION =
             "com.freshollie.shuttlexpressdriver.DriverService.action.USB_PERMISSION";
@@ -50,8 +51,11 @@ public class DriverService extends Service {
 
     private boolean runBackground = true;
 
+    private Handler mainHandler;
+
     private NotificationCompat.Builder notificationBuilder;
-    private NotificationManager notificationManager;
+
+    private ByteBuffer receivedDataBuffer;
 
     private ShuttleXpressDevice shuttleXpressDevice = ShuttleXpressDevice.getInstance();
 
@@ -62,24 +66,38 @@ public class DriverService extends Service {
 
             while (shuttleXpressDevice.isConnected()) {
                 // Wait for data to be received
+
                 UsbRequest usbRequest = usbDeviceConnection.requestWait();
 
-                // If the type of data received is incorrect
-                if (usbRequest == inUsbRequest && shuttleXpressDevice.isConnected()) {
+                // If the type of data received is correct
+                if (usbRequest == inUsbRequest &&
+                        shuttleXpressDevice.isConnected()) {
 
-                    // Let the device know it has new data
-                    new Handler(getMainLooper()).post(new Runnable() {
-                        @Override
-                        /**
-                         * Make sure any functions with callbacks are run inside the main
-                         * thread
-                         */
-                        public void run() {
-                            shuttleXpressDevice.onNewData();
-                        }
-                    });
+                    ByteBuffer previousData = shuttleXpressDevice.getStateBuffer();
 
-                    usbRequest.queue(shuttleXpressDevice.getStateBuffer(), inMaxPacketSize);
+                    // Copy the received data buffer and set that as the current state of the device
+                    shuttleXpressDevice.setStateBuffer(receivedDataBuffer.duplicate());
+
+                    // If the next request doesn't work then the device is probably dead and the
+                    // last input was not valid so don't let the device know it was changed.
+                    if (usbRequest.queue(receivedDataBuffer, inMaxPacketSize)) {
+
+                        // Let the device know it has new data
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            /**
+                             * Make sure any functions with callbacks are run inside the main
+                             * thread
+                             */
+                            public void run() {
+                                shuttleXpressDevice.onNewData();
+                            }
+                        });
+                    } else {
+                        shuttleXpressDevice.setStateBuffer(previousData);
+                    }
+
+
 
                 } else if (usbRequest == null) { // device disconnected
                     Log.v(TAG, "Input thread interrupted");
@@ -135,12 +153,12 @@ public class DriverService extends Service {
         usbPermissionIntent =
                 PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
 
+        mainHandler = new Handler(getMainLooper());
+
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         filter.addAction(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         registerReceiver(usbBroadcastReceiver, filter);
-
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle(getString(R.string.driver_title))
@@ -173,11 +191,13 @@ public class DriverService extends Service {
     public void requestConnection() {
         Log.v(TAG, "Requesting connection to device");
         for (UsbDevice device : usbManager.getDeviceList().values()) {
+            Log.v(TAG, "Checking device:");
             Log.d(TAG, "ProductId: " + String.valueOf(device.getProductId()));
             Log.d(TAG, "VendorId: " + String.valueOf(device.getVendorId()));
 
             if (device.getProductId() == ShuttleXpressDevice.PRODUCT_ID &&
                     device.getVendorId() == ShuttleXpressDevice.VENDOR_ID) {
+                Log.v(TAG, "Found device");
                 if (usbManager.hasPermission(device)) {
                     usbDevice = device;
                     openConnection();
@@ -209,12 +229,13 @@ public class DriverService extends Service {
 
             inUsbRequest = new UsbRequest();
             inUsbRequest.initialize(usbDeviceConnection, usbEndpoint);
-            if (inUsbRequest.queue(shuttleXpressDevice.getStateBuffer(), inMaxPacketSize)) {
+            receivedDataBuffer = ByteBuffer.allocate(inMaxPacketSize);
+
+            if (inUsbRequest.queue(receivedDataBuffer, inMaxPacketSize)) {
                 shuttleXpressDevice.setConnected();
 
                 if (runBackground) {
                     Notification notification = notificationBuilder.build();
-                    notificationManager.notify(NOTIFICATION_ID, notification);
                     startForeground(NOTIFICATION_ID, notification);
                 }
 
@@ -268,7 +289,6 @@ public class DriverService extends Service {
 
     @Override
     public void onDestroy() {
-        notificationManager.cancel(NOTIFICATION_ID);
         stopForeground(true);
         unregisterReceiver(usbBroadcastReceiver);
     }

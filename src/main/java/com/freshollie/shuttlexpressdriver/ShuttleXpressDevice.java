@@ -6,6 +6,7 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by freshollie on 12/26/16.
@@ -126,6 +127,10 @@ public class ShuttleXpressDevice {
         wheel = 0;
         buttons = new Integer[5];
         connected = false;
+    }
+
+    public void setStateBuffer(ByteBuffer data) {
+        state = data;
     }
 
     /**
