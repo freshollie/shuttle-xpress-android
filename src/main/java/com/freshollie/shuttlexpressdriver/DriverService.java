@@ -59,14 +59,38 @@ public class DriverService extends Service {
 
     private ShuttleXpressDevice shuttleXpressDevice = ShuttleXpressDevice.getInstance();
 
-    private Thread inputListeningThread = new Thread(new Runnable() {
+    private int RECONNECT_TIMEOUT = 500;
+
+    // Used in case the device disconnects for 500ms
+    private Runnable reconnectRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.v(TAG, "Attempting to reconnect to device");
+
+            int startTime = (int) System.currentTimeMillis();
+
+            while ((System.currentTimeMillis() - startTime) > RECONNECT_TIMEOUT && !Thread.interrupted()) {
+                if (isAttached()) {
+                    start();
+                    return;
+                }
+            }
+
+            stop();
+        }
+    };
+
+    private Thread reconnectThread;
+
+    private Thread inputListeningThread;
+
+    private Runnable inputListeningRunnable = new Runnable() {
         @Override
         public void run() {
             Log.v(TAG, "Started input listener");
 
-            while (shuttleXpressDevice.isConnected()) {
+            while (shuttleXpressDevice.isConnected() && !Thread.interrupted()) {
                 // Wait for data to be received
-
                 UsbRequest usbRequest = usbDeviceConnection.requestWait();
 
                 // If the type of data received is correct
@@ -100,14 +124,14 @@ public class DriverService extends Service {
 
 
                 } else if (usbRequest == null) { // device disconnected
-                    Log.v(TAG, "Input thread interrupted");
-                    stop();
-                    break;
+                    Log.v(TAG, "Input thread interrupted: Device disconnected");
+                    attemptReopenConnection();
+                    return;
                 }
-
             }
+            Log.v(TAG, "Input thread interrupted");
         }
-    });
+    };
 
     /**
      * This receiver is called when a usb device is detached and when a usb
@@ -137,7 +161,7 @@ public class DriverService extends Service {
                     if (device != null && isRunning()) {
                         if (device.getVendorId() == ShuttleXpressDevice.VENDOR_ID &&
                                 device.getProductId() == ShuttleXpressDevice.PRODUCT_ID) {
-                            stop();
+
                         }
                     }
 
@@ -186,6 +210,22 @@ public class DriverService extends Service {
                 return START_NOT_STICKY;
         }
         return START_NOT_STICKY;
+    }
+
+    private boolean isAttached() {
+        for (UsbDevice device : usbManager.getDeviceList().values()) {
+            if (device.getProductId() == ShuttleXpressDevice.PRODUCT_ID &&
+                    device.getVendorId() == ShuttleXpressDevice.VENDOR_ID) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void attemptReopenConnection() {
+        reconnectThread = new Thread(reconnectRunnable);
+        reconnectThread.start();
     }
 
     public void requestConnection() {
@@ -239,6 +279,7 @@ public class DriverService extends Service {
                     startForeground(NOTIFICATION_ID, notification);
                 }
 
+                inputListeningThread = new Thread(inputListeningRunnable);
                 inputListeningThread.start();
             } else {
                 Log.d(TAG, "Error requesting data, stopping");
@@ -250,6 +291,14 @@ public class DriverService extends Service {
     public void closeConnection() {
         if (shuttleXpressDevice.isConnected()) {
             Log.v(TAG, "Closing connection");
+
+            if (inputListeningThread != null) {
+                inputListeningThread.interrupt();
+            }
+
+            if (reconnectThread != null) {
+                reconnectThread.interrupt();
+            }
 
             if (runBackground) {
                 stopForeground(true);
@@ -280,6 +329,7 @@ public class DriverService extends Service {
             running = false;
             closeConnection();
         }
+
         stopSelf();
     }
 
@@ -289,6 +339,14 @@ public class DriverService extends Service {
 
     @Override
     public void onDestroy() {
+        if (inputListeningThread != null) {
+            inputListeningThread.interrupt();
+        }
+
+        if (reconnectThread != null) {
+            reconnectThread.interrupt();
+        }
+
         stopForeground(true);
         unregisterReceiver(usbBroadcastReceiver);
     }

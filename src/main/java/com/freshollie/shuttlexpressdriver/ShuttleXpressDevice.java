@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 public class ShuttleXpressDevice {
     public static String TAG = ShuttleXpressDevice.class.getSimpleName();
+
     public static final int PRODUCT_ID = 32;
     public static final int VENDOR_ID = 2867;
 
@@ -43,6 +44,24 @@ public class ShuttleXpressDevice {
         public static final int STATE_DOWN = 1;
 
         public static int NUM_KEYS = 10;
+
+        public static ArrayList<Integer> ALL_KEYS = getAllKeys();
+
+        private static ArrayList<Integer> getAllKeys() {
+            ArrayList<Integer> allKeys = new ArrayList<>();
+
+            for (int i = 0; i < NUM_KEYS; i++) {
+                allKeys.add(BUTTON_0 + i);
+            }
+
+            return allKeys;
+        }
+
+        public static ArrayList<Integer> ALL_BUTTONS = getButtons();
+
+        private static ArrayList<Integer> getButtons() {
+            return new ArrayList<>(ALL_KEYS.subList(0, 5));
+        }
     }
 
     public static final int STATUS_CONNECTED = 23947234;
