@@ -100,12 +100,12 @@ public class ShuttleXpressDevice {
 
     }
 
-    public void setConnected() {
+    public synchronized void setConnected() {
         connected = true;
         onConnected();
     }
 
-    public void setDisconnected() {
+    public synchronized void setDisconnected() {
         connected = false;
         onDisconnected();
     }

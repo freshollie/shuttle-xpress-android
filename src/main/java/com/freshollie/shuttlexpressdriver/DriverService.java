@@ -59,23 +59,25 @@ public class DriverService extends Service {
 
     private ShuttleXpressDevice shuttleXpressDevice = ShuttleXpressDevice.getInstance();
 
-    private int RECONNECT_TIMEOUT = 500;
+    private int RECONNECT_TIMEOUT = 5000;
 
-    // Used in case the device disconnects for 500ms
+    // Used in case the device disconnects for 5000ms
     private Runnable reconnectRunnable = new Runnable() {
         @Override
         public void run() {
             Log.v(TAG, "Attempting to reconnect to device");
 
-            int startTime = (int) System.currentTimeMillis();
+            long startTime = System.currentTimeMillis();
 
-            while ((System.currentTimeMillis() - startTime) > RECONNECT_TIMEOUT && !Thread.interrupted()) {
+            while ((System.currentTimeMillis() - startTime) < RECONNECT_TIMEOUT && !Thread.interrupted()) {
                 if (isAttached()) {
+                    Log.v(TAG, "Success, reconnecting");
                     start();
                     return;
                 }
             }
 
+            Log.v(TAG, "Reconnect attempt failed");
             stop();
         }
     };
@@ -150,7 +152,7 @@ public class DriverService extends Service {
                         if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                             if (device != null) {
                                 Log.v(TAG, "Permission for device granted");
-                                requestConnection();
+                                start();
                             }
                         }
                     }
@@ -179,16 +181,16 @@ public class DriverService extends Service {
 
         mainHandler = new Handler(getMainLooper());
 
-        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-        filter.addAction(ACTION_USB_PERMISSION);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        registerReceiver(usbBroadcastReceiver, filter);
-
         notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle(getString(R.string.driver_title))
                 .setContentText(getString(R.string.driver_running_text))
                 .setSmallIcon(R.drawable.ic_gamepad_black_24dp)
                 .setOngoing(true);
+
+        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        filter.addAction(ACTION_USB_PERMISSION);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        registerReceiver(usbBroadcastReceiver, filter);
     }
 
     @Override
@@ -224,6 +226,22 @@ public class DriverService extends Service {
     }
 
     private void attemptReopenConnection() {
+        Log.v(TAG, "Attempting to reconnect");
+
+        if (inputListeningThread != null) {
+            inputListeningThread.interrupt();
+        }
+
+        if (reconnectThread != null) {
+            reconnectThread.interrupt();
+        }
+
+        inUsbRequest.close();
+        usbDeviceConnection.close();
+        usbDevice = null;
+
+        running = false;
+
         reconnectThread = new Thread(reconnectRunnable);
         reconnectThread.start();
     }
@@ -238,13 +256,13 @@ public class DriverService extends Service {
             if (device.getProductId() == ShuttleXpressDevice.PRODUCT_ID &&
                     device.getVendorId() == ShuttleXpressDevice.VENDOR_ID) {
                 Log.v(TAG, "Found device");
+
                 if (usbManager.hasPermission(device)) {
                     usbDevice = device;
                     openConnection();
                 } else {
                     Log.v(TAG, "Requesting permission for device");
                     usbManager.requestPermission(device, usbPermissionIntent);
-
                 }
                 return;
             }
@@ -258,6 +276,7 @@ public class DriverService extends Service {
     public void openConnection() {
         Log.v(TAG, "Opening connection to device");
         if (usbDevice != null) {
+            running = true;
             UsbInterface usbInterface = usbDevice.getInterface(0);
             UsbEndpoint usbEndpoint = usbInterface.getEndpoint(0);
             inMaxPacketSize = usbEndpoint.getMaxPacketSize();
@@ -314,9 +333,14 @@ public class DriverService extends Service {
     public void start() {
         // Start device service if the device service is currently not running
         if (!running) {
-            Log.v(TAG, "Starting");
-            running = true;
-            requestConnection();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.v(TAG, "Starting");
+                    requestConnection();
+                }
+            }).start();
+
         }
     }
 
@@ -324,8 +348,9 @@ public class DriverService extends Service {
      * stops the service and closes device connection
      */
     public void stop() {
+        Log.v(TAG, "Stopping");
+
         if (running) {
-            Log.v(TAG, "Stopping");
             running = false;
             closeConnection();
         }
