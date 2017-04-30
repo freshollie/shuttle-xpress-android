@@ -72,12 +72,19 @@ public class DriverService extends Service {
             while ((System.currentTimeMillis() - startTime) < RECONNECT_TIMEOUT && !Thread.interrupted()) {
                 if (isAttached()) {
                     Log.v(TAG, "Success, reconnecting");
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+
                     start();
                     return;
                 }
             }
 
             Log.v(TAG, "Reconnect attempt failed");
+
             stop();
         }
     };
@@ -193,6 +200,20 @@ public class DriverService extends Service {
         registerReceiver(usbBroadcastReceiver, filter);
     }
 
+    public void notifyRunning() {
+        Notification notification = notificationBuilder
+                .setContentText(getString(R.string.driver_running_text))
+                .build();
+        startForeground(NOTIFICATION_ID, notification);
+    }
+
+    public void notifyConnectionIssue() {
+        Notification notification = notificationBuilder
+                .setContentText("Connection issues, reconnecting")
+                .build();
+        startForeground(NOTIFICATION_ID, notification);
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
         switch (intent.getAction()) {
@@ -227,6 +248,8 @@ public class DriverService extends Service {
 
     private void attemptReopenConnection() {
         Log.v(TAG, "Attempting to reconnect");
+
+        notifyConnectionIssue();
 
         if (inputListeningThread != null) {
             inputListeningThread.interrupt();
@@ -294,8 +317,7 @@ public class DriverService extends Service {
                 shuttleXpressDevice.setConnected();
 
                 if (runBackground) {
-                    Notification notification = notificationBuilder.build();
-                    startForeground(NOTIFICATION_ID, notification);
+                    notifyRunning();
                 }
 
                 inputListeningThread = new Thread(inputListeningRunnable);
@@ -350,10 +372,8 @@ public class DriverService extends Service {
     public void stop() {
         Log.v(TAG, "Stopping");
 
-        if (running) {
-            running = false;
-            closeConnection();
-        }
+        running = false;
+        closeConnection();
 
         stopSelf();
     }

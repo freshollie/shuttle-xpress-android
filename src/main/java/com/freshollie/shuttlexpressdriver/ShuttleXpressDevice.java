@@ -100,12 +100,12 @@ public class ShuttleXpressDevice {
 
     }
 
-    public synchronized void setConnected() {
+    public void setConnected() {
         connected = true;
         onConnected();
     }
 
-    public synchronized void setDisconnected() {
+    public void setDisconnected() {
         connected = false;
         onDisconnected();
     }
@@ -207,14 +207,14 @@ public class ShuttleXpressDevice {
 
     private void onConnected() {
         Log.v(TAG, "Connected");
-        for (ConnectedListener listener: connectedCallbacks) {
+        for (ConnectedListener listener: new ArrayList<>(connectedCallbacks)) {
             listener.onConnected();
         }
     }
 
     private void onDisconnected() {
         Log.v(TAG, "Disconnected");
-        for (ConnectedListener listener: connectedCallbacks) {
+        for (ConnectedListener listener: new ArrayList<>(connectedCallbacks)) {
             listener.onDisconnected();
         }
     }
@@ -223,7 +223,7 @@ public class ShuttleXpressDevice {
         if (DEBUG_OUT) {
             Log.v(TAG, "Key Down:" + String.valueOf(key));
         }
-        for (KeyListener keyListener: keyListeners) {
+        for (KeyListener keyListener: new ArrayList<>(keyListeners)) {
             keyListener.onDown(key);
         }
     }
@@ -232,7 +232,8 @@ public class ShuttleXpressDevice {
         if (DEBUG_OUT) {
             Log.v(TAG, "Key Up:" + String.valueOf(key));
         }
-        for (KeyListener keyListener: keyListeners) {
+
+        for (KeyListener keyListener: new ArrayList<>(keyListeners)) {
             keyListener.onUp(key);
         }
     }
