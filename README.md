@@ -6,46 +6,49 @@ See usage in example app.
 
 ## Usage
 
-###Connecting
+### Connecting
 
     Driver driver = new Driver(context);
     ShuttleXpressDevice device = driver.getDevice();
     // Creates a notification and starts the connection to the
     // ShuttleXpress Device;
     driver.start(); 
-    
-###Interface
+     
+### Interface
 
-    // This click listener is thread safe. UI Updates can be performed through the listener
-    
-    device.registerKeyListener(new ShuttleXpressDevice.KeyListener() {
-        @Override
-        public void onDown(final int id) {
-            if (id == ShuttleXpressDevice.KeyCodes.WHEEL_LEFT) {
-                // Wheel has clicked left
-            } else if (id == ShuttleXpressDevice.KeyCodes.WHEEL_RIGHT) {
-                // Wheel has clicked right
-            }
+```java
+// This click listener is thread safe. UI Updates can be performed through the listener
+
+device.registerKeyListener(new ShuttleXpressDevice.KeyListener() {
+    @Override
+    public void onDown(final int id) {
+        if (id == ShuttleXpressDevice.KeyCodes.WHEEL_LEFT) {
+            // Wheel has clicked left
+        } else if (id == ShuttleXpressDevice.KeyCodes.WHEEL_RIGHT) {
+            // Wheel has clicked right
         }
-        
-        @Override
-        public void onUp(int id) {
-            if (id == ShuttleXpressDevice.KeyCodes.BUTTON_0) {
-                // Button 0 has finished being pressed
-            }
+    }
+
+    @Override
+    public void onUp(int id) {
+        if (id == ShuttleXpressDevice.KeyCodes.BUTTON_0) {
+            // Button 0 has finished being pressed
         }
-    });
+    }
+});
+```
    
 Or read values manually:
 
-    
-    for (int i = 0; i < 5; i++) {
-        Log.V(TAG, String.valueOf(device.getButtonState(i)));
-    }
-    
-    Log.V(TAG, String.valueOf(device.getRingState()));
-    Log.V(TAG, String.valueOf(device.getRingPosition()));
-    Log.V(TAG, String.valueOf(device.getWheelPosition()));
+```java
+for (int i = 0; i < 5; i++) {
+    Log.V(TAG, String.valueOf(device.getButtonState(i)));
+}
+
+Log.V(TAG, String.valueOf(device.getRingState()));
+Log.V(TAG, String.valueOf(device.getRingPosition()));
+Log.V(TAG, String.valueOf(device.getWheelPosition()));
+```
     
     
 
