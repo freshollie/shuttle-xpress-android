@@ -56,4 +56,6 @@ Log.V(TAG, String.valueOf(device.getWheelPosition()));
 
 ## Adding to project
 
-	compile project(":ShuttleXpressDriver-Android")
+```gradle
+compile project(":ShuttleXpressDriver-Android")
+```
