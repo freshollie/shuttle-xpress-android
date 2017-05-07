@@ -8,11 +8,13 @@ See usage in example app.
 
 ### Connecting
 
-    Driver driver = new Driver(context);
-    ShuttleXpressDevice device = driver.getDevice();
-    // Creates a notification and starts the connection to the
-    // ShuttleXpress Device;
-    driver.start(); 
+```java
+Driver driver = new Driver(context);
+ShuttleXpressDevice device = driver.getDevice();
+// Creates a notification and starts the connection to the
+// ShuttleXpress Device;
+driver.start(); 
+```
      
 ### Interface
 
