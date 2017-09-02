@@ -102,9 +102,11 @@ public class DriverService extends Service {
                 // Wait for data to be received
                 UsbRequest usbRequest = usbDeviceConnection.requestWait();
 
+
                 // If the type of data received is correct
                 if (usbRequest == inUsbRequest &&
-                        shuttleXpressDevice.isConnected()) {
+                        shuttleXpressDevice.isConnected() &&
+                        isAttached()) {
 
                     ByteBuffer previousData = shuttleXpressDevice.getStateBuffer();
 
@@ -296,7 +298,7 @@ public class DriverService extends Service {
 
     }
 
-    public void openConnection() {
+    private void openConnection() {
         Log.v(TAG, "Opening connection to device");
         if (usbDevice != null) {
             running = true;
