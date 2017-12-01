@@ -1,4 +1,5 @@
 <img align="right" src="icon.png" height="300">
+
 # Shuttle Xpress Driver for android
 
 This is an Android library which can be used with a with an application to take input from a connected [Contour design Shuttle Xpress](https://contour-design.co.uk/product/shuttlexpress/).
@@ -83,7 +84,7 @@ Log.v(TAG, String.valueOf(device.getWheelPosition()));
 
 ## Adding to project
 
-`git submodule add ...`
+`git submodule add https://github.com/freshollie/shuttle-xpress-android.git`
 
 ```gradle
 compile project(":shuttle-xpress-android")
