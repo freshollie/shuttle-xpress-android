@@ -1,4 +1,4 @@
 <resources>
-    <string name="driver_title">Shuttle Xpress Driver</string>
-    <string name="driver_running_text">Connected and running</string>
+    <string name="notification_title">Shuttle Xpress</string>
+    <string name="notification_connected_text">Connected</string>
 </resources>

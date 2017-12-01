@@ -1,4 +1,4 @@
-package com.freshollie.monitoringapp;
+package com.freshollie.example;
 
 import org.junit.Test;
 

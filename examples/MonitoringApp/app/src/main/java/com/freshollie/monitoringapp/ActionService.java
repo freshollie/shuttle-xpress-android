@@ -1,4 +1,4 @@
-package com.freshollie.monitoringapp;
+package com.freshollie.example;
 
 import android.app.Service;
 import android.content.Intent;

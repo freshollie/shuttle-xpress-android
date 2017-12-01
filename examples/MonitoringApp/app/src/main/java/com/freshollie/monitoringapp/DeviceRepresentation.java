@@ -1,4 +1,4 @@
-package com.freshollie.monitoringapp;
+package com.freshollie.example;
 
 import android.util.Log;
 import android.view.View;
@@ -6,7 +6,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 
-import com.freshollie.shuttlexpressdriver.ShuttleXpressDevice;
+import com.freshollie.shuttlexpress.ShuttleXpressDevice;
 
 /**
  * Created by freshollie on 12/29/16.

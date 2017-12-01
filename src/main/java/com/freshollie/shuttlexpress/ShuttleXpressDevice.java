@@ -1,12 +1,9 @@
-package com.freshollie.shuttlexpressdriver;
+package com.freshollie.shuttlexpress;
 
-import android.inputmethodservice.Keyboard;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
-import java.security.Key;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by freshollie on 12/26/16.
@@ -69,53 +66,25 @@ public class ShuttleXpressDevice {
 
     public static boolean DEBUG_OUT = false;
 
-    private static ShuttleXpressDevice INSTANCE = new ShuttleXpressDevice();
+    private ShuttleXpressConnection shuttleXpressConnection;
 
     private ArrayList<KeyListener> keyListeners = new ArrayList<>();
-    private ArrayList<ConnectedListener> connectedCallbacks = new ArrayList<>();
-
-    private ByteBuffer state;
 
     private int ring;
     private int wheel;
     private Integer buttons[];
-
-    private boolean connected = false;
-
-    public static ShuttleXpressDevice getInstance() {
-        return INSTANCE;
-    }
 
     public interface KeyListener {
         void onDown(int key);
         void onUp(int key);
     }
 
-    public interface ConnectedListener {
-        void onConnected();
-        void onDisconnected();
-    }
 
-    private ShuttleXpressDevice() {
 
-    }
-
-    public void setConnected() {
-        connected = true;
-        onConnected();
-    }
-
-    public void setDisconnected() {
-        connected = false;
-        onDisconnected();
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public ByteBuffer getStateBuffer() {
-        return state;
+    ShuttleXpressDevice() {
+        ring = 0;
+        wheel = 0;
+        buttons = new Integer[5];
     }
 
     public int getButtonState(int id) {
@@ -140,32 +109,20 @@ public class ShuttleXpressDevice {
         return wheel;
     }
 
-    public void resetDevice(int maxPacketSize) {
-        state = ByteBuffer.allocate(maxPacketSize);
-        ring = 0;
-        wheel = 0;
-        buttons = new Integer[5];
-        connected = false;
-    }
-
-    public void setStateBuffer(ByteBuffer data) {
-        state = data;
-    }
-
     /**
      * Parses the new data store the new values
      * and makes the relevant callbacks for changed data
      */
-    public void onNewData() {
-        if (state != null) {
+    void parseNewData(ByteBuffer newData) {
+        if (newData != null) {
             int newRing, newWheel;
 
-            newRing = state.get(0); // Byte 1 contains the value of the ring position
-            newWheel = state.get(1); // Byte 2 contains the value of the wheel position
+            newRing = newData.get(0); // Byte 1 contains the value of the ring position
+            newWheel = newData.get(1); // Byte 2 contains the value of the wheel position
 
             Integer newButtons[] = new Integer[5];
 
-            int newButtonsBytes = ((int) state.get(3)) + 128;
+            int newButtonsBytes = ((int) newData.get(3)) + 128;
             /*
              * Byte 4 contains a binary value with each bit representing a button
              * Button 1: Bit 4
@@ -175,7 +132,7 @@ public class ShuttleXpressDevice {
              * We add 128 to negate the negative bit
              */
 
-            newButtons[4] = ((Byte) state.get(4)).intValue(); // Byte 4 contains the value of button 5
+            newButtons[4] = ((Byte) newData.get(4)).intValue(); // Byte 4 contains the value of button 5
 
             for (int i = 7; i >= 4; i--) { // Gets the bits from the integer value of Byte 5
                 newButtons[i-4] = (newButtonsBytes & (1 << i)) != 0 ? 1 : 0;
@@ -205,36 +162,25 @@ public class ShuttleXpressDevice {
         }
     }
 
-    private void onConnected() {
-        Log.v(TAG, "Connected");
-        for (ConnectedListener listener: new ArrayList<>(connectedCallbacks)) {
-            listener.onConnected();
-        }
-    }
-
-    private void onDisconnected() {
-        Log.v(TAG, "Disconnected");
-        for (ConnectedListener listener: new ArrayList<>(connectedCallbacks)) {
-            listener.onDisconnected();
-        }
-    }
-
-    private void onKeyDown(int key) {
+    private void notifyKeyDown(int key) {
         if (DEBUG_OUT) {
             Log.v(TAG, "Key Down:" + String.valueOf(key));
         }
-        for (KeyListener keyListener: new ArrayList<>(keyListeners)) {
-            keyListener.onDown(key);
+        synchronized (keyListeners) {
+            for (KeyListener keyListener : new ArrayList<>(keyListeners)) {
+                keyListener.onDown(key);
+            }
         }
     }
 
-    private void onKeyUp(int key) {
+    private void notifyKeyUp(int key) {
         if (DEBUG_OUT) {
             Log.v(TAG, "Key Up:" + String.valueOf(key));
         }
-
-        for (KeyListener keyListener: new ArrayList<>(keyListeners)) {
-            keyListener.onUp(key);
+        synchronized (keyListeners) {
+            for (KeyListener keyListener : new ArrayList<>(keyListeners)) {
+                keyListener.onUp(key);
+            }
         }
     }
 
@@ -249,36 +195,36 @@ public class ShuttleXpressDevice {
 
         // Checks if the ring position has changed
         if (newRing == 7 && ring != 7) {
-            onKeyUp(KeyCodes.RING_MIDDLE);
-            onKeyDown(KeyCodes.RING_RIGHT);
+            notifyKeyUp(KeyCodes.RING_MIDDLE);
+            notifyKeyDown(KeyCodes.RING_RIGHT);
 
         } else if (newRing != 7 && ring == 7) {
-            onKeyUp(KeyCodes.RING_RIGHT);
-            onKeyDown(KeyCodes.RING_MIDDLE);
+            notifyKeyUp(KeyCodes.RING_RIGHT);
+            notifyKeyDown(KeyCodes.RING_MIDDLE);
 
         } else if (newRing != -7 && ring == -7) {
-            onKeyUp(KeyCodes.RING_LEFT);
-            onKeyDown(KeyCodes.RING_MIDDLE);
+            notifyKeyUp(KeyCodes.RING_LEFT);
+            notifyKeyDown(KeyCodes.RING_MIDDLE);
 
         } else if (newRing == -7 && ring != -7) {
-            onKeyUp(KeyCodes.RING_MIDDLE);
-            onKeyDown(KeyCodes.RING_LEFT);
+            notifyKeyUp(KeyCodes.RING_MIDDLE);
+            notifyKeyDown(KeyCodes.RING_LEFT);
         }
 
         // Checks if wheel has moved
         if (newWheel != wheel) {
             if (newWheel < 0 && wheel > 0) {
-                onKeyDown(KeyCodes.WHEEL_RIGHT);
-                onKeyUp(KeyCodes.WHEEL_RIGHT);
+                notifyKeyDown(KeyCodes.WHEEL_RIGHT);
+                notifyKeyUp(KeyCodes.WHEEL_RIGHT);
             } else if (newWheel > 0 && wheel < 0) {
-                onKeyDown(KeyCodes.WHEEL_LEFT);
-                onKeyUp(KeyCodes.WHEEL_LEFT);
+                notifyKeyDown(KeyCodes.WHEEL_LEFT);
+                notifyKeyUp(KeyCodes.WHEEL_LEFT);
             } else if (newWheel > wheel) {
-                onKeyDown(KeyCodes.WHEEL_RIGHT);
-                onKeyUp(KeyCodes.WHEEL_RIGHT);
+                notifyKeyDown(KeyCodes.WHEEL_RIGHT);
+                notifyKeyUp(KeyCodes.WHEEL_RIGHT);
             } else {
-                onKeyDown(KeyCodes.WHEEL_LEFT);
-                onKeyUp(KeyCodes.WHEEL_LEFT);
+                notifyKeyDown(KeyCodes.WHEEL_LEFT);
+                notifyKeyUp(KeyCodes.WHEEL_LEFT);
             }
         }
 
@@ -286,28 +232,19 @@ public class ShuttleXpressDevice {
         for (int i = 0; i < 5; i++) {
             if (!newButtons[i].equals(buttons[i])) {
                 if (newButtons[i] == 1) {
-                    onKeyDown(KeyCodes.BUTTON_0 + i); // Because buttons are in chronological order
+                    notifyKeyDown(KeyCodes.BUTTON_0 + i); // Because buttons are in chronological order
                 } else {
-                    onKeyUp(KeyCodes.BUTTON_0 + i);
+                    notifyKeyUp(KeyCodes.BUTTON_0 + i);
                 }
             }
         }
     }
 
-    public void registerKeyListener(KeyListener listener) {
+    public void registerKeyListener(ShuttleXpressDevice.KeyListener listener) {
         keyListeners.add(listener);
     }
 
-    public void unregisterKeyListener(KeyListener listener) {
+    public void unregisterKeyListener(ShuttleXpressDevice.KeyListener listener) {
         keyListeners.remove(listener);
     }
-
-    public void registerConnectedListener(ConnectedListener listener) {
-        connectedCallbacks.add(listener);
-    }
-
-    public void unregisterConnectedListener(ConnectedListener listener) {
-        connectedCallbacks.remove(listener);
-    }
-
 }

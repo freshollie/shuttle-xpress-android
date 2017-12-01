@@ -1,4 +1,4 @@
-package com.freshollie.monitoringapp;
+package com.freshollie.example;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.freshollie.shuttlexpressdriver.DriverService;
-import com.freshollie.shuttlexpressdriver.ShuttleXpressDevice;
+import com.freshollie.shuttlexpress.DriverService;
+import com.freshollie.shuttlexpress.ShuttleXpressDevice;
 
 public class DeviceStatusActivity extends AppCompatActivity {
     public static String TAG = DeviceStatusActivity.class.getSimpleName();
