@@ -107,7 +107,7 @@ public class DeviceTestActivity extends AppCompatActivity {
                 break;
 
             case ShuttleXpressConnection.STATE_RECONNECTING:
-                connectButtonTextResource = R.string.reconnecting;
+                connectionTextResource = R.string.reconnecting;
                 break;
 
             case ShuttleXpressConnection.STATE_DISCONNECTED:

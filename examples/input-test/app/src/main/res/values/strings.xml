@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Shuttle Xpress Test</string>
-    <string name="connected">connected</string>
-    <string name="disconnected">disconnected</string>
-    <string name="connect">connect</string>
-    <string name="disconnect">disconnect</string>
-    <string name="connecting">connecting</string>
-    <string name="reconnecting">reconnecting</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="connecting">Connecting</string>
+    <string name="reconnecting">Reconnecting</string>
+
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
 </resources>
