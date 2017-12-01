@@ -193,14 +193,18 @@ public class ShuttleXpressConnection {
         }
         startConnectionThread = null;
 
+        if (dataReadThread != null && dataReadThread.isAlive()) {
+            dataReadThread.interrupt();
+        }
+        dataReadThread = null;
+
         if (usbDeviceConnection != null) {
             usbDeviceConnection.close();
         }
         usbDeviceConnection = null;
 
-        if (inUsbRequest != null && !dataReadThread.isAlive()) {
-            // Only close the in request if the data read thread is not currently running,
-            // The read thread will close this if required
+        if (inUsbRequest != null && inUsbRequest.cancel()) {
+            // Only close the in request if we manage to cancel the current queue operation
             inUsbRequest.close();
         }
 
@@ -208,10 +212,7 @@ public class ShuttleXpressConnection {
 
 
 
-        if (dataReadThread != null && dataReadThread.isAlive()) {
-            dataReadThread.interrupt();
-        }
-        dataReadThread = null;
+
     }
 
     public boolean isDeviceAttached() {
