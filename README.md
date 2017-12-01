@@ -12,7 +12,7 @@ The library has been used in my [Headunit Controller App](https://github.com/fre
 
 ```java
 ShuttleXpressConnection connection = new ShuttleXpressConnection(context);
-ShuttleXpressDevice device = connetion.getDevice();
+ShuttleXpressDevice device = connection.getDevice();
 
 // Show a notification to show the device is connected
 connection.setShowNotifications(wantNotification);
