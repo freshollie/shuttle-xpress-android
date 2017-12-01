@@ -28,23 +28,10 @@ connection.open();
 
 connection.registerConnectionChangeListener(new ShuttleXpressConnection.ConnectionStateChangeListener() {
     @Override
-    public void onConnected() {
-        refreshConnectionStatus();
-    }
-
-    @Override
-    public void onReconnecting() {
-        refreshConnectionStatus();
-    }
-
-    @Override
-    public void onConnecting() {
-        refreshConnectionStatus();
-    }
-
-    @Override
-    public void onDisconnected() {
-        refreshConnectionStatus();
+    public void onChange(newState) {
+        if (newState == ShuttleXpressConnection.STATE_CONNECTED) {
+            ...
+        }
     }
 });
 

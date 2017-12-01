@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 /**
- * Created by obell on 30.11.17.
+ * Created by Oliver Bell on 30.11.17.
  */
 
 public class ShuttleXpressConnection {
@@ -66,10 +66,7 @@ public class ShuttleXpressConnection {
     private final ArrayList<ConnectionStateChangeListener> connectionStateChangeListeners = new ArrayList<>();
 
     public interface ConnectionStateChangeListener {
-        void onConnected();
-        void onReconnecting();
-        void onConnecting();
-        void onDisconnected();
+        void onChange(int newState);
     }
 
     /**
@@ -169,9 +166,9 @@ public class ShuttleXpressConnection {
     }
 
     private void attemptReopenConnection() {
-        connectionState = STATE_RECONNECTING;
+        setConnectionState(STATE_RECONNECTING);
 
-        notifyReconnecting();
+        showReconnectingNotification();
         closeConnection();
 
         Log.v(TAG, "Attempting to reconnect");
@@ -204,8 +201,8 @@ public class ShuttleXpressConnection {
             context.registerReceiver(usbBroadcastReceiver, intentFilter);
             running = true;
 
-            connectionState = STATE_CONNECTING;
-            notifyConnecting();
+            setConnectionState(STATE_CONNECTING);
+            showConnectingNotification();
 
             attemptConnection();
         }
@@ -222,9 +219,9 @@ public class ShuttleXpressConnection {
             context.unregisterReceiver(usbBroadcastReceiver);
 
             if (connectionState != STATE_DISCONNECTED) {
-                connectionState = STATE_DISCONNECTED;
+                setConnectionState(STATE_DISCONNECTED);
                 closeConnection();
-                notifyDisconnected();
+                showDisconnectedNotification();
             }
 
             cancelNotification();
@@ -237,6 +234,24 @@ public class ShuttleXpressConnection {
 
     public int getConnectionState() {
         return connectionState;
+    }
+
+    private void setConnectionState(int state) {
+        connectionState = state;
+        notifyConnectionStateChange();
+    }
+
+    private void notifyConnectionStateChange() {
+        synchronized (connectionStateChangeListeners) {
+            for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
+                mainThread.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        changeListener.onChange(connectionState);
+                    }
+                });
+            }
+        }
     }
 
     public ShuttleXpressDevice getDevice() {
@@ -259,18 +274,7 @@ public class ShuttleXpressConnection {
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
-    private void notifyConnected() {
-        synchronized (connectionStateChangeListeners) {
-            for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        changeListener.onConnected();
-                    }
-                });
-            }
-        }
-
+    private void showConnectedNotification() {
         if (showNotification) {
             Notification notification = notificationBuilder
                     .setContentText(context.getString(R.string.notification_connected_text))
@@ -280,54 +284,23 @@ public class ShuttleXpressConnection {
         }
     }
 
-    private void notifyDisconnected() {
-        synchronized (connectionStateChangeListeners) {
-            for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        changeListener.onDisconnected();
-                    }
-                });
-            }
-        }
+    private void showDisconnectedNotification() {
+        // Stub
     }
 
-    private void notifyConnecting() {
-        synchronized (connectionStateChangeListeners) {
-            for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        changeListener.onConnecting();
-                    }
-                });
-            }
-        }
-
+    private void showConnectingNotification() {
         if (showNotification) {
             Notification notification = notificationBuilder
-                    .setContentText("Connecting")
+                    .setContentText(context.getString(R.string.notification_text_connecting))
                     .build();
             notificationManager.notify(NOTIFICATION_ID, notification);
         }
     }
 
-    private void notifyReconnecting() {
-        synchronized (connectionStateChangeListeners) {
-            for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        changeListener.onReconnecting();
-                    }
-                });
-            }
-        }
-
+    private void showReconnectingNotification() {
         if (showNotification) {
             Notification notification = notificationBuilder
-                    .setContentText("Connection issues, attempting to reconnect")
+                    .setContentText(context.getString(R.string.notification_text_connection_issues))
                     .build();
             notificationManager.notify(NOTIFICATION_ID, notification);
         }
@@ -404,7 +377,7 @@ public class ShuttleXpressConnection {
                 readThread = new ShuttleXpressReadThread(connection, inUsbRequest, inMaxPacketSize);
                 if (readThread.open()) {
                     connectionState = STATE_CONNECTED;
-                    notifyConnected();
+                    showConnectedNotification();
                     return;
                 } else {
                     connection.close();
