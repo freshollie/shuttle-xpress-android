@@ -115,7 +115,7 @@ public class ShuttleXpressConnection {
         mainThread = new Handler(context.getMainLooper());
 
         // Notification channel for android devices larger than Oreo
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager != null) {
             CharSequence name = "Shuttle Xpress connection status";
             String description = "Provides status of the usb connection to the Shuttle Xpress device";
 
