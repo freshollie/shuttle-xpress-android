@@ -62,12 +62,12 @@ Or read values manually:
 
 ```java
 for (int i = 0; i < 5; i++) {
-    Log.V(TAG, String.valueOf(device.getButtonState(i)));
+    Log.v(TAG, String.valueOf(device.getButtonState(i)));
 }
 
-Log.V(TAG, String.valueOf(device.getRingState()));
-Log.V(TAG, String.valueOf(device.getRingPosition()));
-Log.V(TAG, String.valueOf(device.getWheelPosition()));
+Log.v(TAG, String.valueOf(device.getRingState()));
+Log.v(TAG, String.valueOf(device.getRingPosition()));
+Log.v(TAG, String.valueOf(device.getWheelPosition()));
 ```
     
     
