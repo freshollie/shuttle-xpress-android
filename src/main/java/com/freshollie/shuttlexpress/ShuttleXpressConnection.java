@@ -405,6 +405,7 @@ public class ShuttleXpressConnection {
                 if (readThread.open()) {
                     connectionState = STATE_CONNECTED;
                     notifyConnected();
+                    return;
                 } else {
                     connection.close();
                     inUsbRequest.close();
