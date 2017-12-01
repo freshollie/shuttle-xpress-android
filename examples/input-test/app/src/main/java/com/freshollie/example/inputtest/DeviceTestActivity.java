@@ -17,18 +17,31 @@ public class DeviceTestActivity extends AppCompatActivity {
     private ShuttleXpressDevice shuttleXpressDevice;
     private ShuttleXpressConnection deviceConnection;
 
+    private Button connectButton;
+    private TextView connectionText;
+
     private DeviceRepresentation deviceRepresentation = new DeviceRepresentation();
 
-    private ShuttleXpressConnection.ConnectionChangeListener connectionChangeListener =
-            new ShuttleXpressConnection.ConnectionChangeListener() {
+    private ShuttleXpressConnection.ConnectionStateChangeListener connectionChangeListener =
+            new ShuttleXpressConnection.ConnectionStateChangeListener() {
         @Override
         public void onConnected() {
-            setConnectionStatus(ShuttleXpressDevice.STATUS_CONNECTED);
+            refreshConnectionStatus();
+        }
+
+        @Override
+        public void onReconnecting() {
+            refreshConnectionStatus();
+        }
+
+        @Override
+        public void onConnecting() {
+            refreshConnectionStatus();
         }
 
         @Override
         public void onDisconnected() {
-            setConnectionStatus(ShuttleXpressDevice.STATUS_DISCONNECTED);
+            refreshConnectionStatus();
         }
     };
 
@@ -47,6 +60,7 @@ public class DeviceTestActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +69,15 @@ public class DeviceTestActivity extends AppCompatActivity {
 
         deviceConnection = new ShuttleXpressConnection(this);
         shuttleXpressDevice = deviceConnection.getDevice();
+
+        connectionText = (TextView) findViewById(R.id.connection_status_text);
+        connectButton = (Button) findViewById(R.id.connect_button);
+        connectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleConnection();
+            }
+        });
 
         registerCallbacks();
         refreshConnectionStatus();
@@ -71,56 +94,42 @@ public class DeviceTestActivity extends AppCompatActivity {
     }
 
     public void refreshConnectionStatus() {
-        if (deviceConnection.isConnected()) {
-            Log.v(TAG, "Device is currently connected");
-            setConnectionStatus(ShuttleXpressDevice.STATUS_CONNECTED);
-        } else {
-            Log.v(TAG, "Device is currently disconnected");
-            setConnectionStatus(ShuttleXpressDevice.STATUS_DISCONNECTED);
-        }
-    }
+        int connectionTextResource = R.string.disconnected;
+        int connectButtonTextResource = R.string.disconnect;
 
-    public void setConnectionStatus(int connectionStatus) {
-        TextView connectionText = (TextView) findViewById(R.id.connection_status_text);
-        Button connectButton = (Button) findViewById(R.id.connect_button);
+        switch(deviceConnection.getConnectionState()) {
+            case ShuttleXpressConnection.STATE_CONNECTED:
+                connectionTextResource = R.string.connected;
+                break;
 
-        if (connectionStatus == ShuttleXpressDevice.STATUS_CONNECTED) {
-            connectionText.setText(getString(R.string.connected));
-            connectButton.setText(getString(R.string.disconnect));
-            connectButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    closeConnection();
-                }
-            });
-        } else {
-            connectionText.setText(getString(R.string.disconnected));
-            connectButton.setText(getString(R.string.connect));
-            connectButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openConnection();
-                }
-            });
+            case ShuttleXpressConnection.STATE_CONNECTING:
+                connectionTextResource = R.string.connecting;
+                break;
+
+            case ShuttleXpressConnection.STATE_RECONNECTING:
+                connectButtonTextResource = R.string.reconnecting;
+                break;
+
+            case ShuttleXpressConnection.STATE_DISCONNECTED:
+                connectButtonTextResource = R.string.connect;
+                break;
         }
 
+        connectButton.setText(getString(connectButtonTextResource));
+        connectionText.setText(getString(connectionTextResource));
     }
 
-    public void openConnection() {
+    public void toggleConnection() {
         if (deviceConnection.isRunning()) {
             deviceConnection.close();
+        } else {
+            deviceConnection.open();
         }
-
-        deviceConnection.open();
-    }
-
-    public void closeConnection() {
-        deviceConnection.close();
     }
 
     public void onDestroy() {
         super.onDestroy();
         unregisterDeviceCallbacks();
-        closeConnection();
+        deviceConnection.close();
     }
 }
