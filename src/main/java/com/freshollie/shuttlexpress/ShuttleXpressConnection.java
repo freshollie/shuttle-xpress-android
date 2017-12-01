@@ -1,6 +1,7 @@
 package com.freshollie.shuttlexpress;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -13,6 +14,7 @@ import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.hardware.usb.UsbRequest;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -25,12 +27,12 @@ import java.util.ArrayList;
  */
 
 public class ShuttleXpressConnection {
-    public final static String TAG = ShuttleXpressConnection.class.getSimpleName();
+    public static final String TAG = ShuttleXpressConnection.class.getSimpleName();
 
-    private final static int WAIT_FOR_ATTACH_TIMEOUT = 5000;
+    private static final int WAIT_FOR_ATTACH_TIMEOUT = 5000;
 
-    private final static int NOTIFICATION_ID = 1;
-    private final static String NOTIFICATION_CHANNEL = "None";
+    private static final int NOTIFICATION_ID = 1;
+    private static final String NOTIFICATION_CHANNEL_ID = "USB_CONNECTION";
 
     private static final String ACTION_USB_PERMISSION =
             "com.freshollie.shuttlexpressdriver.DriverService.action.USB_PERMISSION";
@@ -112,7 +114,24 @@ public class ShuttleXpressConnection {
         shuttleXpressDevice = new ShuttleXpressDevice();
         mainThread = new Handler(context.getMainLooper());
 
-        notificationBuilder = new NotificationCompat.Builder(context)
+        // Notification channel for android devices larger than Oreo
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Shuttle Xpress connection status";
+            String description = "Provides status of the usb connection to the Shuttle Xpress device";
+
+            NotificationChannel channel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    name,
+                    NotificationManager.IMPORTANCE_LOW
+            );
+            channel.setDescription(description);
+            channel.setShowBadge(false);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(context.getString(R.string.notification_title))
                 .setContentText(context.getString(R.string.notification_connected_text))
                 .setSmallIcon(R.drawable.ic_gamepad_black_24dp)
