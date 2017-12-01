@@ -188,11 +188,6 @@ public class ShuttleXpressConnection {
     private void closeConnection() {
         Log.v(TAG, "Closing connection");
 
-        if (dataReadThread != null && dataReadThread.isAlive()) {
-            dataReadThread.interrupt();
-        }
-        dataReadThread = null;
-
         if (startConnectionThread != null && startConnectionThread.isAlive()) {
             startConnectionThread.interrupt();
         }
@@ -203,10 +198,20 @@ public class ShuttleXpressConnection {
         }
         usbDeviceConnection = null;
 
-        if (inUsbRequest != null) {
+        if (inUsbRequest != null && !dataReadThread.isAlive()) {
+            // Only close the in request if the data read thread is not currently running,
+            // The read thread will close this if required
             inUsbRequest.close();
         }
+
         inUsbRequest = null;
+
+
+
+        if (dataReadThread != null && dataReadThread.isAlive()) {
+            dataReadThread.interrupt();
+        }
+        dataReadThread = null;
     }
 
     public boolean isDeviceAttached() {
@@ -381,20 +386,20 @@ public class ShuttleXpressConnection {
 
             while (isConnected() && !Thread.interrupted() && usbDeviceConnection != null) {
                 // Wait for data to be received
-                UsbRequest usbRequest = usbDeviceConnection.requestWait();
+                UsbRequest usbResponse = usbDeviceConnection.requestWait();
 
 
                 // If the type of data received is correct
-                if (usbRequest == inUsbRequest &&
-                        isConnected() &&
-                        isDeviceAttached()) {
+                if (usbResponse != null &&
+                        usbResponse == inUsbRequest &&
+                        isConnected()) {
 
                     // Copy the received data buffer and set that as the current state of the device
-                    final ByteBuffer previousData = dataReadBuffer.duplicate();
+                    final ByteBuffer receivedData = dataReadBuffer.duplicate();
 
                     // If the next request doesn't work then the device is probably dead and the
                     // last input was not valid so don't let the device know it was changed.
-                    if (usbRequest.queue(dataReadBuffer, inMaxPacketSize)) {
+                    if (inUsbRequest.queue(dataReadBuffer, inMaxPacketSize)) {
 
                         // Let the device know it has new data
                         mainThread.post(new Runnable() {
@@ -404,11 +409,11 @@ public class ShuttleXpressConnection {
                              * thread
                              */
                             public void run() {
-                                shuttleXpressDevice.parseNewData(previousData);
+                                shuttleXpressDevice.parseNewData(receivedData);
                             }
                         });
                     }
-                } else if (usbRequest == null) { // device disconnected
+                } else if (usbResponse == null) { // device disconnected
                     Log.v(TAG, "Data read thread interrupted: Device disconnected");
                     attemptReopenConnection();
                     return;

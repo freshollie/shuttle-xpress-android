@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 
 public class ShuttleXpressDevice {
-    public static String TAG = ShuttleXpressDevice.class.getSimpleName();
+    private static String TAG = ShuttleXpressDevice.class.getSimpleName();
 
     public static final int PRODUCT_ID = 32;
     public static final int VENDOR_ID = 2867;
