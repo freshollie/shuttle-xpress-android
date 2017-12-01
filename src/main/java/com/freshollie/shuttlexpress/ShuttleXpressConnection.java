@@ -168,9 +168,6 @@ public class ShuttleXpressConnection {
         }
     }
 
-    /**
-     * Run a quite reconnect without informing the user
-     */
     private void attemptReopenConnection() {
         connectionState = STATE_RECONNECTING;
 
@@ -307,6 +304,13 @@ public class ShuttleXpressConnection {
                 });
             }
         }
+
+        if (showNotification) {
+            Notification notification = notificationBuilder
+                    .setContentText("Connecting")
+                    .build();
+            notificationManager.notify(NOTIFICATION_ID, notification);
+        }
     }
 
     private void notifyReconnecting() {
@@ -337,7 +341,7 @@ public class ShuttleXpressConnection {
 
             long startTime = System.currentTimeMillis();
 
-            while ((System.currentTimeMillis() - startTime) < WAIT_FOR_ATTACH_TIMEOUT && !Thread.interrupted()) {
+            while ((System.currentTimeMillis() - startTime) < WAIT_FOR_ATTACH_TIMEOUT && !interrupted()) {
                 if (isDeviceAttached()) {
                     // The device is already marked as connected, so this is probably a reconnect
                     if (connectionState == STATE_RECONNECTING) {
@@ -354,8 +358,10 @@ public class ShuttleXpressConnection {
                 }
             }
 
-            Log.v(TAG, "Waited too long for device to attach");
-            close();
+            if ((System.currentTimeMillis() - startTime) >= WAIT_FOR_ATTACH_TIMEOUT) {
+                Log.v(TAG, "Waited too long for device to attach");
+                close();
+            }
         }
 
         private void requestConnection() {

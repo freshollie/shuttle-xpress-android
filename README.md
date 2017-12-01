@@ -1,6 +1,5 @@
+<img align="right" src="icon.png" height="300">
 # Shuttle Xpress Driver for android
-
-<img align="right" src="icon.png" height="210">
 
 This is an Android library which can be used with a with an application to take input from a connected [Contour design Shuttle Xpress](https://contour-design.co.uk/product/shuttlexpress/).
 
@@ -26,15 +25,25 @@ connection.open();
 ```java
 // UI Updates can be performed through the listeners
 
-connection.registerConnectionChangeListener(new ShuttleXpressConnection.ConnectionChangeListener() {
+connection.registerConnectionChangeListener(new ShuttleXpressConnection.ConnectionStateChangeListener() {
     @Override
     public void onConnected() {
-        setConnectionStatus(ShuttleXpressDevice.STATUS_CONNECTED);
+        refreshConnectionStatus();
+    }
+
+    @Override
+    public void onReconnecting() {
+        refreshConnectionStatus();
+    }
+
+    @Override
+    public void onConnecting() {
+        refreshConnectionStatus();
     }
 
     @Override
     public void onDisconnected() {
-        setConnectionStatus(ShuttleXpressDevice.STATUS_DISCONNECTED);
+        refreshConnectionStatus();
     }
 });
 
@@ -73,6 +82,8 @@ Log.v(TAG, String.valueOf(device.getWheelPosition()));
     
 
 ## Adding to project
+
+`git submodule add ...`
 
 ```gradle
 compile project(":shuttle-xpress-android")
