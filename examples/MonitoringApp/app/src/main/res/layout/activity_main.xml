@@ -9,56 +9,117 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.freshollie.monitoringapp.DeviceStatusActivity">
+    tools:context="com.freshollie.example.inputtest.DeviceTestActivity">
 
     <RelativeLayout
+        android:id="@+id/connection_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/connection_bar">
+        >
 
         <TextView
+            android:id="@+id/connection_status_text"
             android:text="@string/disconnected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:id="@+id/connection_status_text" />
+            />
 
         <Button
-            android:text="@string/connect"
+            android:text="@string/connected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/connect_button"
             android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            />
     </RelativeLayout>
 
     <FrameLayout
         android:layout_below="@id/connection_bar"
-        android:id="@+id/shuttle_xpress_representation"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_centerInParent="true">
-        <View
+        android:layout_centerInParent="true"
+        >
+
+        <FrameLayout
             android:layout_height="300dp"
             android:layout_width="300dp"
             android:layout_gravity="center"
-            android:background="@drawable/shuttle_xpress_base_shape" />
-        <View
-            android:layout_height="155dp"
-            android:layout_width="155dp"
-            android:layout_gravity="center"
-            android:background="@drawable/shuttle_xpress_ring_shape"
-            android:id="@+id/shuttle_xpress_ring"/>
-        <View
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="30dp"
-            android:background="@drawable/shuttle_xpress_clickwheel_dimple_shape"
-            android:id="@+id/shuttle_xpress_clickwheel"/>
-    </FrameLayout>
+            android:id="@+id/shuttle_xpress_representation"
+            android:background="@drawable/shuttle_xpress_base_shape"
+            >
 
+            <View
+                android:id="@+id/shuttle_xpress_ring"
+                android:layout_height="155dp"
+                android:layout_width="155dp"
+                android:layout_gravity="center"
+                android:background="@drawable/shuttle_xpress_ring_shape"
+                />
+
+            <View
+                android:id="@+id/shuttle_xpress_clickwheel"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:background="@drawable/shuttle_xpress_clickwheel_shape"
+                />
+
+            <View
+                android:id="@+id/shuttle_xpress_button_0"
+                android:layout_width="40dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="120dp"
+                android:layout_gravity="left"
+                android:background="@drawable/shuttle_xpress_button_shape"
+                />
+
+            <View
+                android:id="@+id/shuttle_xpress_button_1"
+                android:layout_width="40dp"
+                android:layout_height="70dp"
+                android:rotation="45"
+                android:layout_marginLeft="44dp"
+                android:layout_marginTop="36dp"
+                android:layout_gravity="left"
+                android:background="@drawable/shuttle_xpress_button_shape"
+                />
+
+            <View
+                android:id="@+id/shuttle_xpress_button_2"
+                android:layout_width="40dp"
+                android:layout_height="70dp"
+                android:rotation="90"
+                android:layout_marginLeft="130dp"
+                android:layout_gravity="top"
+                android:background="@drawable/shuttle_xpress_button_shape"
+                />
+
+            <View
+                android:id="@+id/shuttle_xpress_button_3"
+                android:layout_width="40dp"
+                android:layout_height="70dp"
+                android:rotation="-45"
+                android:layout_marginRight="44dp"
+                android:layout_marginTop="36dp"
+                android:layout_gravity="right"
+                android:background="@drawable/shuttle_xpress_button_shape"
+                />
+
+            <View
+                android:id="@+id/shuttle_xpress_button_4"
+                android:layout_width="40dp"
+                android:layout_height="70dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="120dp"
+                android:layout_gravity="right"
+                android:background="@drawable/shuttle_xpress_button_shape"
+                />
+        </FrameLayout>
+    </FrameLayout>
 </RelativeLayout>

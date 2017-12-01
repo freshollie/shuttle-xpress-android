@@ -4,10 +4,10 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.1'
     defaultConfig {
-        applicationId "com.freshollie.monitoringapp"
+        applicationId "com.freshollie.example.inputtest"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 1
+        versionCode 20
         versionName "1.1"
     }
     buildTypes {

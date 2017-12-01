@@ -1,12 +1,14 @@
-package com.freshollie.monitoringapp;
+package com.freshollie.example.inputtest;
 
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
 
-import com.freshollie.shuttlexpressdriver.ShuttleXpressDevice;
+import com.freshollie.example.R;
+import com.freshollie.shuttlexpress.ShuttleXpressDevice;
 
 /**
  * Created by freshollie on 12/29/16.
@@ -45,19 +47,15 @@ public class DeviceRepresentation {
         Log.v(TAG, "");
         int modifier;
 
-        if (direction == ShuttleXpressDevice.ACTION_RIGHT) {
+        if (direction == ShuttleXpressDevice.KeyCodes.WHEEL_RIGHT) {
             modifier = 1;
         } else {
             modifier = -1;
         }
 
-        RotateAnimation anim = new RotateAnimation(clickWheelAngle, clickWheelAngle + modifier * clickWheelAngleInterval, getCenterX(), getCenterY());
-        anim.setInterpolator(new LinearInterpolator());
-        anim.setRepeatCount(0);
-        anim.setDuration(0);
-        clickWheel.startAnimation(anim);
+        clickWheelAngle += (modifier * clickWheelAngleInterval);
+        clickWheelAngle %= 360;
 
-        clickWheelAngle += modifier * clickWheelAngleInterval;
-        clickWheelAngle = clickWheelAngle % 360;
+        clickWheel.setRotation(clickWheelAngle);
     }
 }
