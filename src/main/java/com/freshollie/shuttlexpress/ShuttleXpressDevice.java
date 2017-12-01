@@ -42,9 +42,7 @@ public class ShuttleXpressDevice {
 
         public static int NUM_KEYS = 10;
 
-        public static ArrayList<Integer> ALL_KEYS = getAllKeys();
-
-        private static ArrayList<Integer> getAllKeys() {
+        private static ArrayList<Integer> generateAllKeysArray() {
             ArrayList<Integer> allKeys = new ArrayList<>();
 
             for (int i = 0; i < NUM_KEYS; i++) {
@@ -54,15 +52,10 @@ public class ShuttleXpressDevice {
             return allKeys;
         }
 
-        public static ArrayList<Integer> ALL_BUTTONS = getButtons();
+        public static ArrayList<Integer> ALL_KEYS = generateAllKeysArray();
 
-        private static ArrayList<Integer> getButtons() {
-            return new ArrayList<>(ALL_KEYS.subList(0, 5));
-        }
+        public static ArrayList<Integer> ALL_BUTTONS = new ArrayList<>(ALL_KEYS.subList(0, 5));
     }
-
-    public static final int STATUS_CONNECTED = 23947234;
-    public static final int STATUS_DISCONNECTED = 3289489;
 
     public static boolean DEBUG_OUT = false;
 
@@ -113,7 +106,7 @@ public class ShuttleXpressDevice {
      * Parses the new data store the new values
      * and makes the relevant callbacks for changed data
      */
-    void parseNewData(ByteBuffer newData) {
+    void parseNewData(ByteBuffer newData, boolean firstInput) {
         if (newData != null) {
             int newRing, newWheel;
 
@@ -153,7 +146,9 @@ public class ShuttleXpressDevice {
                             + newButtons[4]
                             + "]");
                 }
-                doCallbacks(newButtons, newRing, newWheel);
+                if (!firstInput) {
+                    doCallbacks(newButtons, newRing, newWheel);
+                }
             }
 
             buttons = newButtons;

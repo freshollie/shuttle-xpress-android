@@ -31,6 +31,11 @@ public class ShuttleXpressConnection {
 
     private static final int WAIT_FOR_ATTACH_TIMEOUT = 5000;
 
+    public static final int STATE_CONNECTED = 23947234;
+    public static final int STATE_CONNECTING = 34532455;
+    public static final int STATE_RECONNECTING = 4657465;
+    public static final int STATE_DISCONNECTED = 3289489;
+
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_ID = "USB_CONNECTION";
 
@@ -49,24 +54,21 @@ public class ShuttleXpressConnection {
 
     private Handler mainThread;
 
-    private UsbDeviceConnection usbDeviceConnection;
-    private UsbRequest inUsbRequest;
-    private int inMaxPacketSize;
-
     private boolean running = false;
     private boolean showNotification = false;
-    private boolean connected = false;
+    private int connectionState;
 
-    private ByteBuffer dataReadBuffer;
     private ShuttleXpressDevice shuttleXpressDevice;
 
-    private DataReadThread dataReadThread;
-    private StartConnectionThread startConnectionThread;
+    private ShuttleXpressReadThread readThread;
+    private ShuttleXpressConnectThread openConnectionThread;
 
-    private ArrayList<ConnectionChangeListener> connectionChangeListeners = new ArrayList<>();
+    private final ArrayList<ConnectionStateChangeListener> connectionStateChangeListeners = new ArrayList<>();
 
-    public interface ConnectionChangeListener {
+    public interface ConnectionStateChangeListener {
         void onConnected();
+        void onReconnecting();
+        void onConnecting();
         void onDisconnected();
     }
 
@@ -111,6 +113,8 @@ public class ShuttleXpressConnection {
         notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        connectionState = STATE_DISCONNECTED;
+
         shuttleXpressDevice = new ShuttleXpressDevice();
         mainThread = new Handler(context.getMainLooper());
 
@@ -146,33 +150,6 @@ public class ShuttleXpressConnection {
         intentFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
     }
 
-    public void setShowNotifications(boolean show) {
-        showNotification = show;
-    }
-
-    private void showConnectedNotification() {
-        if (showNotification) {
-            Notification notification = notificationBuilder
-                    .setContentText(context.getString(R.string.notification_connected_text))
-                    .setOngoing(true)
-                    .build();
-            notificationManager.notify(NOTIFICATION_ID, notification);
-        }
-    }
-
-    private void showConnectionIssuesNotification() {
-        if (showNotification) {
-            Notification notification = notificationBuilder
-                    .setContentText("Connection issues, attempting to reconnect")
-                    .build();
-            notificationManager.notify(NOTIFICATION_ID, notification);
-        }
-    }
-
-    private void cancelNotification() {
-        notificationManager.cancel(NOTIFICATION_ID);
-    }
-
     private UsbDevice getUsbDevice() {
         for (UsbDevice device: usbManager.getDeviceList().values()) {
             if (device.getProductId() == ShuttleXpressDevice.PRODUCT_ID &&
@@ -185,9 +162,9 @@ public class ShuttleXpressConnection {
     }
 
     private void attemptConnection() {
-        if (startConnectionThread == null || !startConnectionThread.isAlive()) {
-            startConnectionThread = new StartConnectionThread();
-            startConnectionThread.start();
+        if (openConnectionThread == null || !openConnectionThread.isAlive()) {
+            openConnectionThread = new ShuttleXpressConnectThread();
+            openConnectionThread.start();
         }
     }
 
@@ -195,43 +172,28 @@ public class ShuttleXpressConnection {
      * Run a quite reconnect without informing the user
      */
     private void attemptReopenConnection() {
-        Log.v(TAG, "Attempting to reconnect");
+        connectionState = STATE_RECONNECTING;
 
-        showConnectionIssuesNotification();
-
+        notifyReconnecting();
         closeConnection();
 
+        Log.v(TAG, "Attempting to reconnect");
         attemptConnection();
     }
 
     private void closeConnection() {
-        Log.v(TAG, "Closing connection");
+        Log.v(TAG, "Closing connection to device");
 
-        if (startConnectionThread != null && startConnectionThread.isAlive()) {
-            startConnectionThread.interrupt();
+        if (openConnectionThread != null && openConnectionThread.isAlive()) {
+            openConnectionThread.interrupt();
         }
-        startConnectionThread = null;
+        openConnectionThread = null;
 
-        if (dataReadThread != null && dataReadThread.isAlive()) {
-            dataReadThread.interrupt();
-        }
-        dataReadThread = null;
-
-        if (usbDeviceConnection != null) {
-            usbDeviceConnection.close();
-        }
-        usbDeviceConnection = null;
-
-        if (inUsbRequest != null && inUsbRequest.cancel()) {
-            // Only close the in request if we manage to cancel the current queue operation
-            inUsbRequest.close();
+        if (readThread != null && readThread.isOpen()) {
+            readThread.close();
         }
 
-        inUsbRequest = null;
-
-
-
-
+        readThread = null;
     }
 
     public boolean isDeviceAttached() {
@@ -244,12 +206,16 @@ public class ShuttleXpressConnection {
             Log.v(TAG, "Opening");
             context.registerReceiver(usbBroadcastReceiver, intentFilter);
             running = true;
+
+            connectionState = STATE_CONNECTING;
+            notifyConnecting();
+
             attemptConnection();
         }
     }
 
     /**
-     * Stops the  and closes device connection
+     * Closes the connection  and closes device connection
      */
     public void close() {
         if (running) {
@@ -258,8 +224,8 @@ public class ShuttleXpressConnection {
 
             context.unregisterReceiver(usbBroadcastReceiver);
 
-            if (connected) {
-                connected = false;
+            if (connectionState != STATE_DISCONNECTED) {
+                connectionState = STATE_DISCONNECTED;
                 closeConnection();
                 notifyDisconnected();
             }
@@ -272,25 +238,33 @@ public class ShuttleXpressConnection {
         return running;
     }
 
-    public boolean isConnected() {
-        return connected;
+    public int getConnectionState() {
+        return connectionState;
     }
 
     public ShuttleXpressDevice getDevice() {
         return shuttleXpressDevice;
     }
 
-    public void registerConnectionChangeListener(ConnectionChangeListener listener) {
-        connectionChangeListeners.add(listener);
+    public void registerConnectionChangeListener(ConnectionStateChangeListener listener) {
+        connectionStateChangeListeners.add(listener);
     }
 
-    public void unregisterConnectionChangeListener(ConnectionChangeListener listener) {
-        connectionChangeListeners.remove(listener);
+    public void unregisterConnectionChangeListener(ConnectionStateChangeListener listener) {
+        connectionStateChangeListeners.remove(listener);
+    }
+
+    public void setShowNotifications(boolean show) {
+        showNotification = show;
+    }
+
+    private void cancelNotification() {
+        notificationManager.cancel(NOTIFICATION_ID);
     }
 
     private void notifyConnected() {
-        synchronized (connectionChangeListeners) {
-            for (final ConnectionChangeListener changeListener: connectionChangeListeners) {
+        synchronized (connectionStateChangeListeners) {
+            for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
                 mainThread.post(new Runnable() {
                     @Override
                     public void run() {
@@ -299,11 +273,19 @@ public class ShuttleXpressConnection {
                 });
             }
         }
+
+        if (showNotification) {
+            Notification notification = notificationBuilder
+                    .setContentText(context.getString(R.string.notification_connected_text))
+                    .setOngoing(true)
+                    .build();
+            notificationManager.notify(NOTIFICATION_ID, notification);
+        }
     }
 
     private void notifyDisconnected() {
-        synchronized (connectionChangeListeners) {
-            for (final ConnectionChangeListener changeListener: connectionChangeListeners) {
+        synchronized (connectionStateChangeListeners) {
+            for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
                 mainThread.post(new Runnable() {
                     @Override
                     public void run() {
@@ -314,15 +296,51 @@ public class ShuttleXpressConnection {
         }
     }
 
-    private class StartConnectionThread extends Thread {
+    private void notifyConnecting() {
+        synchronized (connectionStateChangeListeners) {
+            for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
+                mainThread.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        changeListener.onConnecting();
+                    }
+                });
+            }
+        }
+    }
+
+    private void notifyReconnecting() {
+        synchronized (connectionStateChangeListeners) {
+            for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
+                mainThread.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        changeListener.onReconnecting();
+                    }
+                });
+            }
+        }
+
+        if (showNotification) {
+            Notification notification = notificationBuilder
+                    .setContentText("Connection issues, attempting to reconnect")
+                    .build();
+            notificationManager.notify(NOTIFICATION_ID, notification);
+        }
+    }
+
+    private class ShuttleXpressConnectThread extends Thread {
+        private final String TAG = ShuttleXpressConnectThread.class.getSimpleName();
         @Override
         public void run() {
+            Log.v(TAG, "Started");
+
             long startTime = System.currentTimeMillis();
 
             while ((System.currentTimeMillis() - startTime) < WAIT_FOR_ATTACH_TIMEOUT && !Thread.interrupted()) {
                 if (isDeviceAttached()) {
                     // The device is already marked as connected, so this is probably a reconnect
-                    if (connected) {
+                    if (connectionState == STATE_RECONNECTING) {
                         // Wait 500ms as this will help with reconnection
                         try {
                             Thread.sleep(500);
@@ -336,22 +354,19 @@ public class ShuttleXpressConnection {
                 }
             }
 
-            Log.v(TAG, "Waited too long for device to attach, closing connection");
-
+            Log.v(TAG, "Waited too long for device to attach");
             close();
         }
 
         private void requestConnection() {
-            startConnectionThread = null;
+            openConnectionThread = null;
 
             Log.v(TAG, "Requesting connection to device");
 
             UsbDevice device = getUsbDevice();
             if (device != null) {
                 if (usbManager.hasPermission(device)) {
-                    if (openConnection(device)) {
-                        notifyConnected();
-                    }
+                    openConnection(device);
                 } else {
                     Log.v(TAG, "Requesting permission for device");
                     usbManager.requestPermission(device, usbPermissionIntent);
@@ -359,68 +374,86 @@ public class ShuttleXpressConnection {
                 return;
             }
 
-            Log.v(TAG, "No devices found, closing");
+            Log.v(TAG, "No devices found");
             close();
         }
 
-        private boolean openConnection(UsbDevice usbDevice) {
+        private void openConnection(UsbDevice usbDevice) {
             if (!running) {
-                return false;
+                return;
             }
 
             Log.v(TAG, "Opening connection to device");
             if (usbDevice != null) {
                 UsbInterface usbInterface = usbDevice.getInterface(0);
                 UsbEndpoint usbEndpoint = usbInterface.getEndpoint(0);
-                inMaxPacketSize = usbEndpoint.getMaxPacketSize();
+                int inMaxPacketSize = usbEndpoint.getMaxPacketSize();
 
-                usbDeviceConnection = usbManager.openDevice(usbDevice);
-                usbDeviceConnection.claimInterface(usbInterface, true);
+                UsbDeviceConnection connection = usbManager.openDevice(usbDevice);
+                connection.claimInterface(usbInterface, true);
 
-                inUsbRequest = new UsbRequest();
-                inUsbRequest.initialize(usbDeviceConnection, usbEndpoint);
-                dataReadBuffer = ByteBuffer.allocate(inMaxPacketSize);
+                UsbRequest inUsbRequest = new UsbRequest();
+                inUsbRequest.initialize(connection, usbEndpoint);
 
-                if (inUsbRequest.queue(dataReadBuffer, inMaxPacketSize)) {
-                    connected = true;
-
-                    dataReadThread = new DataReadThread();
-                    dataReadThread.start();
-
-                    showConnectedNotification();
-
-                    return true;
+                readThread = new ShuttleXpressReadThread(connection, inUsbRequest, inMaxPacketSize);
+                if (readThread.open()) {
+                    connectionState = STATE_CONNECTED;
+                    notifyConnected();
+                } else {
+                    connection.close();
+                    inUsbRequest.close();
                 }
             }
 
-            Log.d(TAG, "Error opening connection, closing");
+            Log.d(TAG, "Error opening connection");
             close();
-            return false;
         }
     }
 
-    private class DataReadThread extends Thread {
+    private class ShuttleXpressReadThread extends Thread {
+        private final String TAG = ShuttleXpressReadThread.class.getSimpleName();
+
+        UsbDeviceConnection usbDeviceConnection;
+        UsbRequest inUsbRequest;
+        ByteBuffer readBuffer;
+
+        int inMaxPacketSize;
+        boolean firstInput;
+        boolean open;
+
+        private ByteBuffer dataReadBuffer;
+
+        ShuttleXpressReadThread(UsbDeviceConnection connection, UsbRequest request, int maxPacketSize) {
+            super();
+            inMaxPacketSize = maxPacketSize;
+            inUsbRequest = request;
+            usbDeviceConnection = connection;
+            readBuffer = ByteBuffer.allocate(inMaxPacketSize);
+        }
+
         @Override
         public void run() {
-            Log.v(TAG, "Data read thread started");
+            Log.v(TAG, "Started");
 
-            while (isConnected() && !Thread.interrupted() && usbDeviceConnection != null) {
+            while (open) {
                 // Wait for data to be received
                 UsbRequest usbResponse = usbDeviceConnection.requestWait();
-
 
                 // If the type of data received is correct
                 if (usbResponse != null &&
                         usbResponse == inUsbRequest &&
-                        isConnected()) {
+                        open &&
+                        inUsbRequest.queue(readBuffer, inMaxPacketSize)) {
 
                     // Copy the received data buffer and set that as the current state of the device
-                    final ByteBuffer receivedData = dataReadBuffer.duplicate();
+                    final ByteBuffer receivedData = readBuffer.duplicate();
+                    int numBytesReceived = receivedData.position();
 
                     // If the next request doesn't work then the device is probably dead and the
                     // last input was not valid so don't let the device know it was changed.
-                    if (inUsbRequest.queue(dataReadBuffer, inMaxPacketSize)) {
-
+                    //
+                    // Also make sure we actually read data before parsing it
+                    if (numBytesReceived >= 5) {
                         // Let the device know it has new data
                         mainThread.post(new Runnable() {
                             @Override
@@ -429,21 +462,49 @@ public class ShuttleXpressConnection {
                              * thread
                              */
                             public void run() {
-                                shuttleXpressDevice.parseNewData(receivedData);
+                                shuttleXpressDevice.parseNewData(receivedData, firstInput);
+                                firstInput = false;
                             }
                         });
+
+
                     }
-                } else if (usbResponse == null) { // device disconnected
-                    Log.v(TAG, "Data read thread interrupted: Device disconnected");
-                    attemptReopenConnection();
-                    return;
+                } else if (open) { // device disconnected
+                    Log.v(TAG, "Device connection error");
+                    break;
                 }
             }
 
-            if (dataReadThread != null && dataReadThread == this) {
-                Log.v(TAG, "Data read thread stopped");
+            if (open) {
                 close();
+                try {
+                    sleep(500);
+                } catch (InterruptedException ignored){}
+                attemptReopenConnection();
             }
+
+            Log.v(TAG, "Stopped");
+
+            usbDeviceConnection.close();
+            inUsbRequest.close();
+        }
+
+        boolean open() {
+            if (inUsbRequest.queue(readBuffer, inMaxPacketSize)) {
+                firstInput = true;
+                open = true;
+                start();
+                return true;
+            }
+            return false;
+        }
+
+        void close() {
+            open = false;
+        }
+
+        boolean isOpen() {
+            return open;
         }
     }
 }
