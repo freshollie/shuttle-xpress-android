@@ -135,7 +135,7 @@ public class ShuttleXpressConnection {
         notificationBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(context.getString(R.string.notification_title))
                 .setContentText(context.getString(R.string.notification_connected_text))
-                .setSmallIcon(R.drawable.ic_gamepad_black_24dp)
+                .setSmallIcon(R.drawable.ic_notification_shuttle_xpress)
                 .setOngoing(true);
 
 
