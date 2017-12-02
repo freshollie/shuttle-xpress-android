@@ -24,26 +24,11 @@ public class DeviceTestActivity extends AppCompatActivity {
 
     private ShuttleXpressConnection.ConnectionStateChangeListener connectionChangeListener =
             new ShuttleXpressConnection.ConnectionStateChangeListener() {
-        @Override
-        public void onConnected() {
-            refreshConnectionStatus();
-        }
-
-        @Override
-        public void onReconnecting() {
-            refreshConnectionStatus();
-        }
-
-        @Override
-        public void onConnecting() {
-            refreshConnectionStatus();
-        }
-
-        @Override
-        public void onDisconnected() {
-            refreshConnectionStatus();
-        }
-    };
+                @Override
+                public void onChange(int newState) {
+                    refreshConnectionStatus();
+                }
+            };
 
     private ShuttleXpressDevice.KeyListener deviceKeyListener = new ShuttleXpressDevice.KeyListener() {
         @Override
@@ -68,6 +53,8 @@ public class DeviceTestActivity extends AppCompatActivity {
         deviceRepresentation.loadFromView(findViewById(R.id.shuttle_xpress_representation));
 
         deviceConnection = new ShuttleXpressConnection(this);
+        deviceConnection.setShowNotifications(true);
+
         shuttleXpressDevice = deviceConnection.getDevice();
 
         connectionText = (TextView) findViewById(R.id.connection_status_text);
