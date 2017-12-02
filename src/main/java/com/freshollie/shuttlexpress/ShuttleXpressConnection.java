@@ -376,7 +376,7 @@ public class ShuttleXpressConnection {
 
                 readThread = new ShuttleXpressReadThread(connection, inUsbRequest, inMaxPacketSize);
                 if (readThread.open()) {
-                    connectionState = STATE_CONNECTED;
+                    setConnectionState(STATE_CONNECTED);
                     showConnectedNotification();
                     return;
                 } else {
