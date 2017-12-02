@@ -53,6 +53,8 @@ public class DeviceTestActivity extends AppCompatActivity {
         deviceRepresentation.loadFromView(findViewById(R.id.shuttle_xpress_representation));
 
         deviceConnection = new ShuttleXpressConnection(this);
+
+        // Not recommended unless running in a service
         deviceConnection.setShowNotifications(true);
 
         shuttleXpressDevice = deviceConnection.getDevice();
@@ -114,7 +116,8 @@ public class DeviceTestActivity extends AppCompatActivity {
         }
     }
 
-    public void onDestroy() {
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
         unregisterDeviceCallbacks();
         deviceConnection.close();
