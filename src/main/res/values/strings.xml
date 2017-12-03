@@ -3,4 +3,6 @@
     <string name="notification_connected_text">Connected</string>
     <string name="notification_text_connecting">Connecting</string>
     <string name="notification_text_connection_issues">Connection issues, attempting to reconnect</string>
+    <string name="notification_channel_name">Shuttle Xpress connection status</string>
+    <string name="notification_channel_description">Provides status of the usb connection to the Shuttle Xpress device</string>
 </resources>

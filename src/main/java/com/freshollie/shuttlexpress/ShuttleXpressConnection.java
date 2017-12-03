@@ -76,14 +76,14 @@ public class ShuttleXpressConnection {
     private BroadcastReceiver usbBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "Intent Received: " + intent.getAction());
+            log("Intent Received: " + intent.getAction());
 
             if (ACTION_USB_PERMISSION.equals(intent.getAction())) {
                 synchronized (this) {
                     UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         if (device != null) {
-                            Log.v(TAG, "Permission for device granted");
+                            log("Permission for device granted");
                             attemptConnection();
                         }
                     }
@@ -117,8 +117,8 @@ public class ShuttleXpressConnection {
 
         // Notification channel for android devices larger than Oreo
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager != null) {
-            CharSequence name = "Shuttle Xpress connection status";
-            String description = "Provides status of the usb connection to the Shuttle Xpress device";
+            CharSequence name = context.getString(R.string.notification_channel_name);
+            String description = context.getString(R.string.notification_channel_description);
 
             NotificationChannel channel = new NotificationChannel(
                     NOTIFICATION_CHANNEL_ID,
@@ -171,12 +171,12 @@ public class ShuttleXpressConnection {
         showReconnectingNotification();
         closeConnection();
 
-        Log.v(TAG, "Attempting to reconnect");
+        log("Attempting to reconnect");
         attemptConnection();
     }
 
     private void closeConnection() {
-        Log.v(TAG, "Closing connection to device");
+        log("Closing connection to device");
 
         if (openConnectionThread != null && openConnectionThread.isAlive()) {
             openConnectionThread.interrupt();
@@ -197,7 +197,7 @@ public class ShuttleXpressConnection {
     public void open() {
         // Start device service if the device service is currently not running
         if (!running) {
-            Log.v(TAG, "Opening");
+            log("Opening");
             context.registerReceiver(usbBroadcastReceiver, intentFilter);
             running = true;
 
@@ -214,7 +214,7 @@ public class ShuttleXpressConnection {
     public void close() {
         if (running) {
             running = false;
-            Log.v(TAG, "Closing");
+            log("Closing");
 
             context.unregisterReceiver(usbBroadcastReceiver);
 
@@ -310,7 +310,7 @@ public class ShuttleXpressConnection {
         private final String TAG = ShuttleXpressConnectThread.class.getSimpleName();
         @Override
         public void run() {
-            Log.v(TAG, "Started");
+            log("Started");
 
             long startTime = System.currentTimeMillis();
 
@@ -332,7 +332,7 @@ public class ShuttleXpressConnection {
             }
 
             if ((System.currentTimeMillis() - startTime) >= WAIT_FOR_ATTACH_TIMEOUT) {
-                Log.v(TAG, "Waited too long for device to attach");
+                log("Waited too long for device to attach");
                 close();
             }
         }
@@ -340,20 +340,20 @@ public class ShuttleXpressConnection {
         private void requestConnection() {
             openConnectionThread = null;
 
-            Log.v(TAG, "Requesting connection to device");
+            log("Requesting connection to device");
 
             UsbDevice device = getUsbDevice();
             if (device != null) {
                 if (usbManager.hasPermission(device)) {
                     openConnection(device);
                 } else {
-                    Log.v(TAG, "Requesting permission for device");
+                    log("Requesting permission for device");
                     usbManager.requestPermission(device, usbPermissionIntent);
                 }
                 return;
             }
 
-            Log.v(TAG, "No devices found");
+            log("No devices found");
             close();
         }
 
@@ -362,7 +362,7 @@ public class ShuttleXpressConnection {
                 return;
             }
 
-            Log.v(TAG, "Opening connection to device");
+            log("Opening connection to device");
             if (usbDevice != null) {
                 UsbInterface usbInterface = usbDevice.getInterface(0);
                 UsbEndpoint usbEndpoint = usbInterface.getEndpoint(0);
@@ -385,7 +385,7 @@ public class ShuttleXpressConnection {
                 }
             }
 
-            Log.d(TAG, "Error opening connection");
+            log("Error opening connection");
             close();
         }
     }
@@ -413,7 +413,7 @@ public class ShuttleXpressConnection {
 
         @Override
         public void run() {
-            Log.v(TAG, "Started");
+            log("Started");
 
             while (open) {
                 // Wait for data to be received
@@ -450,7 +450,7 @@ public class ShuttleXpressConnection {
 
                     }
                 } else if (open) { // device disconnected
-                    Log.v(TAG, "Device connection error");
+                    log("Device connection error");
                     break;
                 }
             }
@@ -463,7 +463,7 @@ public class ShuttleXpressConnection {
                 attemptReopenConnection();
             }
 
-            Log.v(TAG, "Stopped");
+            log("Stopped");
 
             usbDeviceConnection.close();
             inUsbRequest.close();
@@ -486,5 +486,9 @@ public class ShuttleXpressConnection {
         boolean isOpen() {
             return open;
         }
+    }
+
+    private void log(String message) {
+        if (BuildConfig.DEBUG) Log.d(TAG, message);
     }
 }

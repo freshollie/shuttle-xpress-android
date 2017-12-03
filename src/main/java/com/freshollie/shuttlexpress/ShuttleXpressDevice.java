@@ -54,17 +54,12 @@ public class ShuttleXpressDevice {
         }
 
         public static final int[] ALL_KEYS = generateAllKeysArray();
-
         public static final int[] BUTTON_KEYS = Arrays.copyOfRange(ALL_KEYS, 0, 5);
-
         public static final int[] RING_KEYS = Arrays.copyOfRange(ALL_KEYS, 5, 8);
-
         public static final int[] WHEEL_KEYS = Arrays.copyOfRange(ALL_KEYS, 8, 10);
     }
 
     public static boolean DEBUG_OUT = false;
-
-    private ShuttleXpressConnection shuttleXpressConnection;
 
     private ArrayList<KeyListener> keyListeners = new ArrayList<>();
 
@@ -76,8 +71,6 @@ public class ShuttleXpressDevice {
         void onDown(int key);
         void onUp(int key);
     }
-
-
 
     ShuttleXpressDevice() {
         ring = 0;
