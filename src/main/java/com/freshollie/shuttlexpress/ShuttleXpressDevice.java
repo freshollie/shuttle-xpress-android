@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by freshollie on 12/26/16.
@@ -40,21 +41,25 @@ public class ShuttleXpressDevice {
         public static final int STATE_UP = 0;
         public static final int STATE_DOWN = 1;
 
-        public static int NUM_KEYS = 10;
+        public static final int NUM_KEYS = 10;
 
-        private static ArrayList<Integer> generateAllKeysArray() {
-            ArrayList<Integer> allKeys = new ArrayList<>();
+        private static int[] generateAllKeysArray() {
+            int allKeys[] = new int[NUM_KEYS];
 
             for (int i = 0; i < NUM_KEYS; i++) {
-                allKeys.add(BUTTON_0 + i);
+                allKeys[i] = BUTTON_0 + i;
             }
 
             return allKeys;
         }
 
-        public static ArrayList<Integer> ALL_KEYS = generateAllKeysArray();
+        public static final int[] ALL_KEYS = generateAllKeysArray();
 
-        public static ArrayList<Integer> ALL_BUTTONS = new ArrayList<>(ALL_KEYS.subList(0, 5));
+        public static final int[] BUTTON_KEYS = Arrays.copyOfRange(ALL_KEYS, 0, 5);
+
+        public static final int[] RING_KEYS = Arrays.copyOfRange(ALL_KEYS, 5, 8);
+
+        public static final int[] WHEEL_KEYS = Arrays.copyOfRange(ALL_KEYS, 8, 10);
     }
 
     public static boolean DEBUG_OUT = false;

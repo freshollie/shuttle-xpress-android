@@ -36,7 +36,7 @@ public class ShuttleXpressConnection {
     public static final int STATE_RECONNECTING = 4657465;
     public static final int STATE_DISCONNECTED = 3289489;
 
-    private static final int NOTIFICATION_ID = 1;
+    private static final int NOTIFICATION_ID = 34543532;
     private static final String NOTIFICATION_CHANNEL_ID = "USB_CONNECTION";
 
     private static final String ACTION_USB_PERMISSION =
