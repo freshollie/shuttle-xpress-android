@@ -1,4 +1,4 @@
-<img align="right" src="icon.png" height="300">
+<img align="right" src="icon.png" height="200px">
 
 # Shuttle Xpress Driver for android
 
@@ -67,11 +67,15 @@ Log.v(TAG, String.valueOf(device.getRingPosition()));
 Log.v(TAG, String.valueOf(device.getWheelPosition()));
 ```
     
-    
-
 ## Adding to project
+1. In your android project root directory
 
-`git submodule add https://github.com/freshollie/shuttle-xpress-android.git`
+```
+git submodule add https://github.com/freshollie/shuttle-xpress-android.git`
+git sudmodule update shuttle-xpress-android
+```
+
+2. In your build.gradle
 
 ```gradle
 compile project(":shuttle-xpress-android")
