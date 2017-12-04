@@ -5,7 +5,7 @@ android {
     buildToolsVersion '27.0.1'
     defaultConfig {
         applicationId "com.freshollie.example.shuttlexpress.test"
-        minSdkVersion 14
+        minSdkVersion 17
         targetSdkVersion 27
         versionCode 20
         versionName "1.1"
