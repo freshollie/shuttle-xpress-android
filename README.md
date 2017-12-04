@@ -6,7 +6,7 @@ This is an Android library which can be used to incorperate user input from a [C
 
 The library has been used in my [Headunit Controller App](https://github.com/freshollie/AndroidHeadunitController), but other usage can be found in the example app.
 
-The library requires API 14 or higher, due to the limitations of the App Compat notifications library 
+The library currently requires API 17 or higher, due to a limitation of the UsbRequests API (This may be lowered in the future)
 
 ## Usage
 
