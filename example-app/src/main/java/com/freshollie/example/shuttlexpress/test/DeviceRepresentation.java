@@ -1,13 +1,8 @@
-package com.freshollie.example.inputtest;
+package com.freshollie.example.shuttlexpress.test;
 
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
-
-import com.freshollie.example.R;
 import com.freshollie.shuttlexpress.ShuttleXpressDevice;
 
 /**
@@ -22,8 +17,10 @@ public class DeviceRepresentation {
     private View clickWheel;
     private FrameLayout holder;
 
+    private static float CLICK_WHEEL_STEP = 360/10;
+
     private int clickWheelAngle = 0;
-    private float clickWheelAngleInterval = 360/10;
+
 
     public DeviceRepresentation() {
 
@@ -53,7 +50,7 @@ public class DeviceRepresentation {
             modifier = -1;
         }
 
-        clickWheelAngle += (modifier * clickWheelAngleInterval);
+        clickWheelAngle += (modifier * CLICK_WHEEL_STEP);
         clickWheelAngle %= 360;
 
         clickWheel.setRotation(clickWheelAngle);

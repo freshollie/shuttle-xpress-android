@@ -1,2 +1,0 @@
-include ':app', ':shuttle-xpress-android'
-project(':shuttle-xpress-android').projectDir = new File('shuttle-xpress-android')

@@ -1,13 +1,11 @@
-package com.freshollie.example.inputtest;
+package com.freshollie.example.shuttlexpress.test;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.freshollie.example.R;
 import com.freshollie.shuttlexpress.ShuttleXpressConnection;
 import com.freshollie.shuttlexpress.ShuttleXpressDevice;
 

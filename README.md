@@ -1,4 +1,4 @@
-<img align="right" src="icon.png" height="200px">
+<img align="right" src="library-icon.png" height="200px">
 
 # Shuttle Xpress Driver for android
 
@@ -28,7 +28,7 @@ connection.open();
 
 connection.registerConnectionChangeListener(new ShuttleXpressConnection.ConnectionStateChangeListener() {
     @Override
-    public void onChange(newState) {
+    public void onChange(int newState) {
         if (newState == ShuttleXpressConnection.STATE_CONNECTED) {
             ...
         }
