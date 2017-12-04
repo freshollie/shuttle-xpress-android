@@ -2,7 +2,7 @@
 
 # Shuttle Xpress Driver for android
 
-This is an Android library which can be built into an Android application to integrate user input from a [Contour design Shuttle Xpress](https://contour-design.co.uk/product/shuttlexpress/).
+This is an Android library which can be used to incorperate user input from a [Contour design Shuttle Xpress](https://contour-design.co.uk/product/shuttlexpress/) into an Android application.
 
 The library has been used in my [Headunit Controller App](https://github.com/freshollie/AndroidHeadunitController), but other usage can be found in the example app.
 
