@@ -6,6 +6,8 @@ This is an Android library which can be used to incorperate user input from a [C
 
 The library has been used in my [Headunit Controller App](https://github.com/freshollie/AndroidHeadunitController), but other usage can be found in the example app.
 
+The library requires API 14 or higher, due to the limitations of the App Compat notifications library 
+
 ## Usage
 
 ### Connecting
@@ -67,16 +69,32 @@ Log.v(TAG, String.valueOf(device.getRingPosition()));
 Log.v(TAG, String.valueOf(device.getWheelPosition()));
 ```
     
-## Adding to project
-1. In your android project root directory
+## Adding Shuttle Xpress your Android Studio project
 
-```
-git submodule add https://github.com/freshollie/shuttle-xpress-android.git`
-git sudmodule update shuttle-xpress-android
-```
+### Easier method
 
-2. In your build.gradle
+1. `git clone https://github.com/freshollie/shuttle-xpress-android.git` wherever you wish
+1. Open your android studio project
+1. File -> New -> Import module: `path/to/shuttle-xpress-android/shuttle-xpress-library`
 
-```gradle
-compile project(":shuttle-xpress-android")
-```
+Done. However you will need to manually to update the sourcecode in your projects
+directory when this library updates.
+
+
+### Better method
+
+1. Go to your project root directory
+1. `git submodule add https://github.com/freshollie/shuttle-xpress-android.git`
+1. `git sudmodule update shuttle-xpress-android`
+1. Open `settings.gradle`
+1. Add `include ':shuttle-xpress-library'`
+1. And `project(':shuttle-xpress-library').projectDir = new File('shuttle-xpress-android/shuttle-xpress-library')`
+1. Finally open `app/build.gradle`
+1. And add `compile project(':shuttle-xpress-library')` to the build dependencies
+
+Brilliant, now your app repository contains this library as a submodule, which can easily be update with `git pull`
+inside from inside the module directory
+
+To sync the submodule after a clone
+
+`git submodule init; git submodule update shuttle-xpress-android`

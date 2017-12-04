@@ -1,1 +1,2 @@
-include ':example-app', ':library'
+include ':example-app'
+include ':shuttle-xpress-library'

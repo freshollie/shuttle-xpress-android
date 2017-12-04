@@ -5,7 +5,7 @@ android {
     buildToolsVersion '27.0.1'
     defaultConfig {
         applicationId "com.freshollie.example.shuttlexpress.test"
-        minSdkVersion 19
+        minSdkVersion 14
         targetSdkVersion 27
         versionCode 20
         versionName "1.1"
@@ -22,5 +22,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:27.0.2'
 
-    compile project(":library")
+    compile project(':shuttle-xpress-library')
 }
