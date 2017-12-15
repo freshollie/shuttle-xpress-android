@@ -243,11 +243,12 @@ public class ShuttleXpressConnection {
 
     private void notifyConnectionStateChange() {
         synchronized (connectionStateChangeListeners) {
+            final int finalConnectionState = connectionState;
             for (final ConnectionStateChangeListener changeListener: connectionStateChangeListeners) {
                 mainThread.post(new Runnable() {
                     @Override
                     public void run() {
-                        changeListener.onChange(connectionState);
+                        changeListener.onChange(finalConnectionState);
                     }
                 });
             }
